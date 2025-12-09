@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" 
+      content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;">
+  <title>StarBook | Home</title>
+  <style>
+    /* ========================
+       Root variables & reset
+       ======================== */
+    :root{
+      --accent: #111;
+      --light-bg: #f8f8f8;
+      --text-dark: #111;
+      --text-light: rgb(109,132,136);
+      --border: #ddd;
+      --white: #fff;
+      --transition: 0.35s;
+      --card-shadow: 0 6px 28px rgba(13,18,25,0.08);
+      --glass-bg: rgba(255,255,255,0.4);
+      --nav-height: 64px;
+      --muted: #6d8488;
+      --accent-cta: #ff4d6d;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      font-family:'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      background:var(--light-bg);
+      color:var(--text-dark);
+      display:flex;
+      flex-direction:column;
+      min-height:100vh;
+      padding-top: var(--nav-height);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    /* ========================
+       NAVBAR (kept unchanged)
+       ======================== */
+    .navbar{
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--nav-height);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:0 20px;
+      box-shadow:0 2px 6px rgba(0,0,0,0.1);
+      z-index:9999;
+      background:var(--glass-bg);
+      backdrop-filter: blur(8px) saturate(140%);
+    }
+
+    .nav-left,.nav-right{display:flex;align-items:center;gap:16px}
+    .nav-right{flex:1;justify-content:flex-end}
+    .nav-links{display:flex;align-items:center;gap:25px}
+    .nav-text{color:rgba(0,0,0,0.75);text-decoration:none;font-size:15px;white-space:nowrap}
+    .active-text{color:var(--text-dark);font-weight:700}
+    .logo{height: 30px; display:block}
+
+    .drawer-btn{
+      display:none;border:none;background:none;color:var(--accent);
+      font-size:22px;cursor:pointer;padding:6px;
+    }
+
+
+    /* ==========================================
+       HERO SLIDESHOW (dim background + overlay)
+       ========================================== */
+    .hero-wrap{
+      position: relative;
+      width:100%;
+      min-height:62vh;
+      max-height:920px;
+      overflow:hidden;
+      display:block;
+      background:#000;
+    }
+    .slideshow {
+      height:100%;
+      width:100%;
+      position:relative;
+    }
+    .slide {
+      position:absolute;
+      inset:0;
+      background-size:cover;
+      background-position:center;
+      opacity:0;
+      transform:scale(1.03);
+      transition: opacity 900ms cubic-bezier(.2,.9,.3,1), transform 900ms ease;
+      filter:brightness(.45) contrast(.9);
+      will-change:opacity,transform;
+    }
+    .slide.show { opacity:1; transform:scale(1); filter:brightness(.55) contrast(1); }
+
+    /* overlay card where the animated text sits */
+    .hero-overlay {
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      pointer-events:none;
+    }
+    .hero-card {
+      pointer-events:auto;
+      max-width:1100px;
+      margin:40px;
+      width:100%;
+      background: linear-gradient(180deg, rgba(0,0,0,0.28), rgba(0,0,0,0.4));
+      color:var(--white);
+      border-radius:14px;
+      padding:28px 30px;
+      box-shadow:0 12px 40px rgba(2,6,23,0.48);
+      display:grid;
+      gap:14px;
+      grid-template-columns: 1fr 380px;
+      align-items:center;
+    }
+    .hero-headline { font-size:30px; font-weight:700; line-height:1.03; letter-spacing:-0.2px; }
+    .hero-sub { color:rgba(255,255,255,0.86); font-size:15px; }
+    .hero-features { display:flex; flex-direction:column; gap:8px; margin-top:6px; }
+    .feature-pill { background:rgba(255,255,255,0.06); padding:8px 12px; border-radius:999px; display:inline-block; font-weight:600; font-size:13px; color:#fff; }
+
+    /* animated feature lines (typed/slide effect) */
+    .feature-animated {
+      font-weight:700;
+      font-size:18px;
+      margin-top:6px;
+      height:26px;
+      overflow:hidden;
+      position:relative;
+    }
+    .feature-animated span {
+      display:block;
+      transform:translateY(0);
+      animation: slideFeature 12s linear infinite;
+      color: var(--accent-cta);
+      letter-spacing:0.2px;
+    }
+    @keyframes slideFeature {
+      0%   { transform: translateY(0%); }
+      20%  { transform: translateY(0%); }
+      25%  { transform: translateY(-100%); }
+      45%  { transform: translateY(-100%); }
+      50%  { transform: translateY(-200%); }
+      70%  { transform: translateY(-200%); }
+      75%  { transform: translateY(-300%); }
+      95%  { transform: translateY(-300%); }
+      100% { transform: translateY(0%); }
+    }
+
+    .hero-cta { display:flex; gap:12px; margin-top:12px }
+    .btn-primary { padding:12px 18px; border-radius:10px; background:var(--accent-cta); color:#fff; border:none; font-weight:700; cursor:pointer; box-shadow:0 8px 22px rgba(255,77,109,0.18); }
+    .btn-outline { padding:12px 18px; border-radius:10px; background:transparent; color:#fff; border:1px solid rgba(255,255,255,0.18); cursor:pointer; font-weight:700; }
+
+    /* small hero visual on right */
+    .hero-visual { display:flex; gap:8px; justify-content:flex-end; align-items:center; }
+    .hero-visual img { width:120px; height:120px; padding: 10px; object-fit:contain; border-radius:12px; box-shadow:0 12px 30px rgba(0,0,0,0.45); transform:translateY(0); transition:transform .6s ease; }
+    .hero-card:hover .hero-visual img { transform:translateY(-6px) rotate(-1deg); }
+
+    /* ==========================================
+       Feature / Explore Cards (two column grid)
+       ========================================== */
+    .page-content{ padding:32px 48px; max-width:1280px; width:100%; margin:0 auto }
+    .two-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:18px; align-items:stretch }
+    .card { background:var(--white); border-radius:12px; padding:18px; box-shadow:var(--card-shadow); display:grid; grid-template-columns: 1fr; gap:14px}
+    .card h3 { margin:0; font-size:18px; }
+    .card p { margin-top:8px; color:var(--muted); font-size:14px }
+    .nested-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px }
+    .nested-grid img { width:100%; height:90px; object-fit:cover; border-radius:10px; }
+
+    /* ==========================================
+       Brochure-style celebrity list (5 celebs)
+       ========================================== */
+    .brochure { margin-top:36px; display:grid; grid-template-columns:repeat(5,1fr); gap:18px; align-items:start }
+    .brochure-card { background:var(--white); border-radius:12px; overflow:hidden; box-shadow:var(--card-shadow); display:flex; flex-direction:column; transition:transform .18s }
+    .brochure-card:hover { transform:translateY(-6px) }
+    .brochure-media { width:100%; aspect-ratio: 4/3; object-fit:cover; display:block }
+    .brochure-body { padding:12px 14px; display:flex; gap:10px; align-items:flex-start; flex-direction:column }
+    .brochure-body h4 { margin:0; font-size:15px; }
+    .brochure-body p { margin:6px 0 0; font-size:13px; color:var(--muted) }
+
+    /* ==========================================
+       Testimonials / Social Proof
+       ========================================== */
+    .testimonials { margin-top:44px; background:linear-gradient(180deg,#fff,#fafafa); padding:28px; border-radius:12px; box-shadow:var(--card-shadow) }
+    .test-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px }
+    .test { background:#fff; padding:14px; border-radius:12px; box-shadow:0 6px 18px rgba(7,11,17,0.04); }
+    .test p { color:var(--muted); font-size:14px; margin:0 0 8px }
+    .test .who { font-weight:700; font-size:13px; color:var(--text-dark) }
+
+    /* ==========================================
+       Responsive rules
+       ========================================== */
+    @media (max-width:1100px) {
+      .hero-card { grid-template-columns:1fr 240px; padding:22px; }
+      .brochure { grid-template-columns:repeat(3,1fr) }
+      .test-grid { grid-template-columns: 1fr 1fr}
+    }
+    @media (max-width:820px) {
+      .two-grid { grid-template-columns:1fr; }
+      .hero-card { grid-template-columns:1fr; gap:12px; text-align:left }
+      .hero-visual { justify-content:flex-start }
+      .brochure { grid-template-columns:repeat(2,1fr) }
+      .test-grid { grid-template-columns:1fr; }
+      .page-content{ padding:32px 30px; max-width:1280px; width:100%; margin:0 auto }
+    }
+    @media (max-width:480px) {
+      .hero-headline { font-size:22px }
+      .hero-sub { font-size:13px }
+      .hero-visual img { width:84px; height:84px }
+      .brochure { grid-template-columns:1fr }
+      .page-content{ padding:32px 20px; max-width:1280px; width:100%; margin:0 auto }
+    }
+
+    footer{
+      background:#000;margin-top:48px;color:#fff;text-align:center;padding:24px;font-size:14px;
+    }
+
+    /* simple utility */
+    .muted { color:var(--muted) }
+
+   /* ========================
+       RESPONSIVE
+       ======================== */
+
+    @media (max-width:768px){
+      .nav-links{display:none}
+      .drawer-btn{display:flex}
+      .nav-left{margin-right:5px}
+      .cf-grid{padding:0 20px}
+    }
+    @media (max-width:600px){
+      .logo {height: 25px;}
+    }
+
+       /* ========================
+       Drawer menu styles (minimal & scoped)
+       ======================== */
+    #drawerMenu {
+      position: fixed;
+      top: var(--nav-height);
+      right: 0;
+      width: 220px;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(12px);
+      border-left: 1px solid #ddd;
+      box-shadow: -2px 0 8px rgba(0,0,0,0.08);
+      padding: 14px 16px;
+      display: none;
+      z-index: 9998;
+    }
+    #drawerMenu a { display:block; padding:10px 6px; color: rgba(0,0,0,0.85); text-decoration:none; border-radius:6px; }
+    #drawerMenu a.active-text { font-weight:700; color:var(--text-dark); }
+    #drawerMenu a:hover { background:#fafafa; }
+
+
+
+  </style>
+
+      <!-- Smartsupp Live Chat script -->
+    <script type="text/javascript">
+    var _smartsupp = _smartsupp || {};
+    _smartsupp.key = '5b99a2a99b90497b27aa80d08a784b475fae365e';
+    window.smartsupp||(function(d) {
+      var s,c,o=smartsupp=function(){ o._.push(arguments)};o._=[];
+      s=d.getElementsByTagName('script')[0];c=d.createElement('script');
+      c.type='text/javascript';c.charset='utf-8';c.async=true;
+      c.src='https://www.smartsuppchat.com/loader.js?';s.parentNode.insertBefore(c,s);
+    })(document);
+    </script>
+    <noscript> Powered by <a href=“https://www.smartsupp.com” target=“_blank”>Smartsupp</a>
+    </noscript>
+</head>
+
+<body>
+  <!-- Navbar (kept exactly as you provided) -->
+  <nav class="navbar frost-fog">
+
+    <div class="nav-left">
+      <div ><img class="logo" src="images/starbook_row_large_icon.png" alt="StarBook"></div>
+    </div>
+
+
+
+    <div class="nav-right">
+      <div class="nav-links">
+        <a href="index.html" class="nav-text active-text">Home</a>
+        <a href="celebrities.html" class="nav-text">Book a celebrity</a>
+        <!--<a href="events.html" class="nav-text">Events</a>-->
+        <a href="contact.html" class="nav-text">Contact us</a>
+        <a href="how.html" class="nav-text">How it works</a>
+      </div>
+      <button class="drawer-btn" id="drawerToggle" aria-label="Open menu">☰</button>
+    </div>
+
+    <!-- Drawer Menu (hidden by default; toggled on mobile) -->
+    <div id="drawerMenu" aria-hidden="true">
+        <a href="index.html" class="nav-text active-text">Home</a>
+        <a href="celebrities.html" class="nav-text">Book a celebrity</a>
+        <!--<a href="events.html" class="nav-text">Events</a>-->
+        <a href="contact.html" class="nav-text">Contact us</a>
+        <a href="how.html" class="nav-text">How it works</a>
+    </div>
+  </nav>
+
+  <!-- ============================
+       HERO: Dimmable slideshow
+       ============================ -->
+  <header class="hero-wrap" aria-hidden="false">
+    <div class="slideshow" id="slideshow">
+      <div class="slide" style="background-image: url('slides/Bellie\ Elish.jpg');" data-index="0"></div>
+      <div class="slide" style="background-image: url('slides/Brad\ Pitt.jpg');" data-index="1"></div>
+      <div class="slide" style="background-image: url('slides/Christ\ Brown.jpg');" data-index="2"></div>
+      <div class="slide" style="background-image: url('slides/Johnny\ Depp.jpg');" data-index="3"></div>
+      <div class="slide" style="background-image: url('slides/Ed\ Sheeran.jpg');" data-index="4"></div>
+      <div class="slide" style="background-image: url('slides/Jason\ Mamoa.jpeg');" data-index="5"></div>
+      <div class="slide" style="background-image: url('slides/Kevin\ Costner.jpg');" data-index="6"></div>
+    </div>
+
+    <div class="hero-overlay" aria-hidden="false">
+      <div class="hero-card" role="region" aria-label="starbook highlights">
+        <div>
+          <div class="hero-headline">Book top celebrities — effortlessly.</div>
+          <div class="hero-sub">From intimate meet & greets to global campaigns — manage bookings, offers and events in one place.</div>
+
+          <div class="hero-features">
+            <div class="feature-pill">Verified Profiles</div>
+            <div class="feature-pill">Secure Contracts</div>
+            <div class="feature-pill">Real-time Availability</div>
+          </div>
+
+          <div class="feature-animated" aria-hidden="true">
+            <span>Celebrity appearances that elevate your brand</span>
+            <span>Curated talent for campaigns & activations</span>
+            <span>Fast booking, secure payments, reliable support</span>
+            <span>Personalized meet & greet experiences</span>
+          </div>
+
+          <div class="hero-cta">
+            <button class="btn-primary" id="ctaExplore">Explore Celebrities</button>
+            <button class="btn-outline" id="ctaHow">How it works</button>
+          </div>
+        </div>
+
+        <div class="hero-visual" aria-hidden="true">
+          <img src="images/stand-alone-header-white.png" alt="starbook preview">
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================
+       PAGE CONTENT
+       ============================ -->
+  <main class="page-content" id="mainContent">
+    <!-- two cards: explore celebs + explore events -->
+    <section aria-labelledby="exploreHeading" style="margin-top:10px">
+      <h2 id="exploreHeading" class="muted" style="font-size:20px">Discover</h2>
+      <div class="two-grid">
+        <div class="card" aria-labelledby="cCeleb">
+
+          <div>
+            <h3 id="cCeleb">Book a Celebrity</h3>
+            <p>Find the perfect talent for your event — browse curated profiles, view past events, availability, and booking fees. Ready to book? send a request in minutes.</p>
+
+          <!--<div style="width:150px;display:flex;align-items:center;justify-content:center">
+            <img src="images/celeb_collage.jpg" alt="" style="width:130px;height:130px;object-fit:cover;border-radius:10px;box-shadow:0 10px 26px rgba(0,0,0,0.12)">
+          </div>-->
+          </div>
+
+            <div class="nested-grid" aria-hidden="true">
+              <img src="celebrities/Johnny_Depp.jpg" alt="celeb sample 1">
+              <img src="celebrities/Nicki_Minaj.jpg" alt="celeb sample 2">
+              <img src="celebrities/Dwayne_Johnson.jpg" alt="celeb sample 3">
+              <img src="celebrities/Adele_Laurie.jpg" alt="celeb sample 4">
+            </div>
+
+            <div style="margin-top:12px;">
+              <button class="btn-primary" id="openCelebs">Get Started</button>
+            </div>
+
+        </div>
+
+        <div class="card" aria-labelledby="cEvents">
+          <div style="flex:1">
+            <h3 id="cEvents">Explore Events</h3>
+            <p>Search events by type — brand campaigns, concerts, private functions and corporate appearances. See examples of past activations and request quotes.</p>
+            <ul style="margin:12px 0 0 18px;color:var(--muted)">
+              <li>Campaign activations & brand partnerships</li>
+              <li>Concerts & live shows</li>
+              <li>Private & corporate appearances</li>
+            </ul>
+            <div style="margin-top:12px;">
+              <button class="btn-outline" id="openEvents">View events</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- brochure: 5 celebrities with recent event summary -->
+    <section aria-labelledby="recentEvents" style="margin-top:30px;">
+      <h3 id="recentEvents" style="font-size:18px;margin-bottom:12px">Recent events & hosted appearances</h3>
+      <div class="brochure" id="brochureGrid" role="list">
+        <!-- JS will populate five brochure cards here -->
+      </div>
+    </section>
+
+    <!-- testimonials -->
+    <section style="margin-top:36px;">
+      <div class="testimonials" aria-labelledby="testHeading">
+        <h3 id="testHeading" style="margin:0 0 14px 0">What event organizers are saying</h3>
+        <div class="test-grid" id="testGrid">
+          <!-- JS will populate testimonials -->
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    StarBook © 2025 | Contact: support@starbook.com | Feedback | Created Oct 2025
+  </footer>
+
+  <!-- Modal (kept minimal) -->
+  <div id="cf-modal" class="cf-modal frost-dark" style="display:none">
+    <div class="cf-modal-content">
+      <h3>Result not found</h3>
+      <p>Sorry, we couldn’t find a matching celebrity or event.</p>
+      <button id="cf-modal-close">Close</button>
+    </div>
+  </div>
+
+  <!-- Sample data + scripts -->
+  <script>
+    /* Drawer toggle & outside-click close (kept from your original) */
+    (function(){
+      const drawerToggle = document.getElementById("drawerToggle");
+      const drawerMenu = document.getElementById("drawerMenu");
+
+      if (!drawerToggle || !drawerMenu) return;
+
+      const openDrawer = () => {
+        drawerMenu.style.display = "block";
+        drawerMenu.setAttribute("aria-hidden", "false");
+      };
+      const closeDrawer = () => {
+        drawerMenu.style.display = "none";
+        drawerMenu.setAttribute("aria-hidden", "true");
+      };
+
+      drawerToggle.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (drawerMenu.style.display === "block") closeDrawer();
+        else openDrawer();
+      });
+
+      document.addEventListener("click", (e) => {
+        const target = e.target;
+        if (!drawerMenu.contains(target) && !drawerToggle.contains(target)) {
+          closeDrawer();
+        }
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeDrawer();
+      });
+    })();
+
+    /* ---------------------
+       Slideshow logic
+       --------------------- */
+    (function() {
+      const slides = Array.from(document.querySelectorAll('.slide'));
+      let current = 0;
+      const total = slides.length;
+      // initial show slide 0
+      slides.forEach(s => s.classList.remove('show'));
+      if (slides[0]) slides[0].classList.add('show');
+
+      function goTo(next) {
+        slides[current].classList.remove('show');
+        slides[next].classList.add('show');
+        current = next;
+      }
+
+      function nextSlide() {
+        const nxt = (current + 1) % total;
+        goTo(nxt);
+      }
+
+      // advance every 6.5s
+      let timer = setInterval(nextSlide, 6500);
+
+      // pause on hover
+      const hero = document.querySelector('.hero-wrap');
+      hero.addEventListener('mouseenter', () => clearInterval(timer));
+      hero.addEventListener('mouseleave', () => timer = setInterval(nextSlide, 6500));
+
+      // quickly allow keyboard navigation for a11y
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') {
+          goTo((current - 1 + total) % total);
+        } else if (e.key === 'ArrowRight') {
+          goTo((current + 1) % total);
+        }
+      });
+    })();
+
+    /* ---------------------
+       Populate brochure (5 celebrities)
+       --------------------- */
+    (function(){
+      // Replace this array with your real data source or keep as fallback
+      const CELEBS = [
+        { id: '8', name: 'Chris Brown', image: 'events/chris_brown_event.jpg', recentEvent: "Breezy Bowl XX Tour 2025 - Europe & North America </br></br> <b>Nearly 2 million tickets sold globally </b>" },
+        { id: '12', name: 'Beyoncé Knowles', image: 'events/beyonce_event.jpg', recentEvent: 'Renaissance Tour 2025 — United States </br></br> <b> Over 40 Thousand tickets sold globally </b>' },
+        { id: '30', name: 'Shakira Mebarak', image: 'events/shakira_event.jpg', recentEvent: 'Las Mujeres Ya No Lloran World Tour 2026 — North Americas </br></br> <b>Fast selling tickets sold globally </b>' },
+        { id: '1', name: 'Post Malone', image: 'events/post_malone_event.jpg', recentEvent: 'Big Ass World Tour 2025 - United States </br></br> <b> Massive Sales of tickets sold globally </b>' },
+        { id: '144', name: 'Rosalía', image: 'events/rosalía_events.jpg', recentEvent: 'Rosalia Lux Tour 2026 - United States </br></br> <b> Massive Sales of tickets sold globally </b>' }
+      ];
+
+      const container = document.getElementById('brochureGrid');
+      CELEBS.forEach(c => {
+        const card = document.createElement('article');
+        card.className = 'brochure-card';
+        card.setAttribute('role','listitem');
+        card.innerHTML = `
+          <img class="brochure-media" src="${c.image}" alt="${c.name}">
+          <div class="brochure-body">
+            <h4>${c.name}</h4>
+            <p>${c.recentEvent}</p>
+            <div style="margin-top:8px; width:100%; display:flex; justify-content:space-between; align-items:center">
+              <button class="btn-primary" data-celeb="${c.id}">View profile</button>
+              <button class="btn-outline" data-book="${c.id}">Request booking</button>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      // sample click handlers
+      container.addEventListener('click', (e) => {
+        const btn = e.target.closest('button');
+        if (!btn) return;
+        const id = btn.dataset.celeb || btn.dataset.book;
+        if (btn.dataset.celeb) {
+          window.location.href = `celebinfo.html?id=${id}`;
+        } else if (btn.dataset.book) {
+          window.location.href = `bookings.html?request=${id}`;
+        }
+      });
+    })();
+
+    /* ---------------------
+       Testimonials (sample)
+       --------------------- */
+    (function(){
+      const TESTS = [
+        { who: 'Christopher E. — Events Manager', text: 'Booked a last-minute brand host and the team handled everything. Smooth contracting and professional talent.' },
+        { who: 'Janet A. — Marketing Lead', text: 'We ran a successful influencer campaign. Platform made matching and scheduling effortless.' },
+        { who: 'Noel S. — Concert Promoter', text: 'Reliable communication and timely payments — our performers showed up and delivered.' }
+      ];
+      const grid = document.getElementById('testGrid');
+      TESTS.forEach(t => {
+        const item = document.createElement('div');
+        item.className = 'test';
+        item.innerHTML = `<p>"${t.text}"</p><div class="who">${t.who}</div>`;
+        grid.appendChild(item);
+      });
+    })();
+
+    /* CTA nav handlers */
+    document.getElementById('ctaExplore').addEventListener('click', () => window.location.href = 'celebrities.html');
+    document.getElementById('openCelebs').addEventListener('click', () => window.location.href = 'celebrities.html');
+    document.getElementById('openEvents').addEventListener('click', () => window.location.href = 'events.html');
+    document.getElementById('ctaHow').addEventListener('click', () => window.location.href = 'how.html');
+
+    // keep original search-related UX from your page (minimal integration)
+    document.addEventListener("DOMContentLoaded", () => {
+      // keep your existing cfInitHome script if present — omitted here for brevity.
+    });
+  </script>
+</body>
+
+</html>

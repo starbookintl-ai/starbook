@@ -1,0 +1,225 @@
+   /* --- Navbar Layout --- */
+   .navbar {
+       display: flex;
+       width: 100%;
+       align-items: center;
+       justify-content: space-evenly;
+       padding: 12px 32px;
+       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+       position:sticky;
+       top: 0;
+       z-index: 999;
+       
+   }
+
+
+   .nav-links {
+       display: flex;
+       align-items: center;
+       gap: 10px;
+   }
+
+   .nav-text {
+       text-decoration: none;
+       color: rgba(0, 0, 0, 0.753);
+       font-size: 15px;
+   }
+
+   .active-text {
+       color: var(--text-dark);
+       font-weight: bold;
+   }
+
+   .icon {
+       height: 70%;
+       object-fit: contain;
+   }
+
+   /*end import from previous layout*/
+
+   .nav-left {
+       width: 30%;
+       display: flex;
+       align-items: center;
+       gap: 16px;
+       transition: opacity var(--transition) ease;
+       margin-right: 20px;
+   }
+
+
+   .nav-right {
+       width: 70%;
+       display: flex;
+       align-items: center;
+       gap: 16px;
+       transition: opacity var(--transition) ease;
+       justify-content: right;
+   }
+
+
+   .logo {
+       font-size: 22px;
+       font-weight: 700;
+       color: var(--accent);
+   }
+
+   .nav-item {
+       font-weight: bold;
+   }
+
+   .active-text {
+       color: var(--text-dark);
+   }
+
+   .icon {
+       height: 70%;
+       object-fit: contain;
+   }
+
+   .drawer-btn {
+       display: none;
+       margin-left: 20px;
+       cursor: pointer;
+       font-size: 22px;
+       border: none;
+       background: none;
+       color: var(--accent);
+   }
+
+
+
+
+
+   /* --- Search Box --- */
+   .search-bar {
+       position: relative;
+       display: flex;
+       align-items: center;
+       border: 1px solid var(--border);
+       border-radius: 30px;
+       padding: 6px 10px;
+       width: 220px;
+       margin: 0px 20px;
+       transition: all 0.3s ease;
+   }
+
+   .searchPill {
+       cursor: pointer;
+       display: flex;
+       background: black;
+       color: white;
+       justify-content: center;
+       align-items: center;
+       height: 30px;
+       width: 50px;
+       border-radius: 25px;
+   }
+
+   .search-placeholder::placeholder {
+       color: rgb(0, 0, 0);
+       opacity: 1;
+   }
+
+   .search-bar.expanded {
+       width: 100%;
+   }
+
+   .search-bar input {
+       border: none;
+       outline: none;
+       background: transparent;
+       width: 100%;
+       padding: 5px 8px;
+       font-size: 14px;
+       color: #111;
+   }
+
+   .cancel {
+       margin-left: 10px;
+       display: none;
+       background: black;
+       color: white;
+       justify-content: center;
+       align-items: center;
+       height: 30px;
+       width: 50px;
+       border-radius: 25px;
+       cursor: pointer;
+       opacity: 0;
+       transition: opacity var(--transition) ease;
+   }
+
+   .cancel.visible {
+       opacity: 1;
+   }
+
+   /* --- Dropdown Modal (Search Results) --- */
+   .search-results {
+       position: absolute;
+       top: 105%;
+       left: 0;
+       width: 100%;
+       background: #fff;
+       border-radius: 12px;
+       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+       display: none;
+       overflow: hidden;
+       max-height: 250px;
+       overflow-y: auto;
+       z-index: 1000;
+   }
+
+   .search-results.visible {
+       display: block;
+   }
+
+   .result-item {
+       padding: 10px 15px;
+       cursor: pointer;
+       transition: background 0.2s;
+   }
+
+   .result-item:hover {
+       background: #f0f0f0;
+   }
+
+   .no-results {
+       padding: 10px 15px;
+       color: #777;
+       font-style: italic;
+   }
+
+
+
+
+
+
+   /* RESPONSIVE MOBILE */
+   @media (max-width: 768px) {
+       .nav-links {
+           display: none;
+       }
+
+       .nav-left {
+           margin-right: 50px;
+       }
+
+       .nav-right {
+           width: fit-content;
+       }
+
+       .drawer-btn {
+           display: flex;
+
+       }
+
+       .search-bar {
+           width: 150px;
+           margin: 0px 10px;
+       }
+
+       .navbar {
+           padding: 12px 10px;
+       }
+
+   }

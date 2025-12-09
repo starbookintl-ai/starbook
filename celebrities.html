@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StarBook | Celebrities</title>
+  <style>
+    /* ========================
+       Root variables & reset
+       ======================== */
+    :root {
+      --accent: #111;
+      --light-bg: #f8f8f8;
+      --text-dark: #111;
+      --text-light: rgb(109, 132, 136);
+      --border: #ddd;
+      --white: #fff;
+      --transition: 0.2s;
+      --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      --glass-bg: rgba(255, 255, 255, 0.4);
+      --nav-height: 64px;
+      /* navbar height used for body padding */
+      --accent-cta: #ff4d6d;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    html,
+    body {
+      height: 100%
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      background: var(--light-bg);
+      color: var(--text-dark);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+
+      /* ensure the fixed navbar doesn't overlap content */
+      padding-top: var(--nav-height);
+    }
+
+    table {
+      border-collapse: collapse
+    }
+
+    /* ========================
+       NAVBAR (fixed + responsive)
+       ======================== */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--nav-height);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 0 20px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      z-index: 9999;
+      background: var(--glass-bg);
+      backdrop-filter: blur(8px) saturate(140%);
+    }
+
+    .nav-left,
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 16px
+    }
+
+    .nav-right {
+      flex: 1;
+      justify-content: flex-end
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 25px
+    }
+
+    .nav-text {
+      color: rgba(0, 0, 0, 0.75);
+      text-decoration: none;
+      font-size: 15px;
+      white-space: nowrap
+    }
+
+    .active-text {
+      color: var(--text-dark);
+      font-weight: 700
+    }
+
+    .logo {
+      height: 30px;
+      display: block
+    }
+
+    .drawer-btn {
+      display: none;
+      border: none;
+      background: none;
+      color: var(--accent);
+      font-size: 22px;
+      cursor: pointer;
+      padding: 6px;
+    }
+
+    /* ========================
+       SEARCH
+       ======================== */
+    .cf-search-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 500px;
+      max-width: 40vw;
+      height: 38px;
+      padding: 6px 10px;
+      border-radius: 30px;
+      border: 1px solid var(--border);
+      background: var(--white);
+      box-sizing: border-box;
+      transition: all var(--transition) ease;
+    }
+
+    .cf-search {
+      flex: 1;
+      padding: 10px 12px;
+      font-size: 16px;
+      border: 0;
+      background: transparent;
+      border-radius: 6px;
+      min-width: 0
+    }
+
+    .cf-search::placeholder {
+      color: rgb(0, 0, 0);
+      opacity: 1
+    }
+
+    .cf-search-btn,
+    .searchPill,
+    .cancel {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 28px;
+      padding: 0 10px;
+      border-radius: 20px;
+      border: none;
+      cursor: pointer;
+      background: #000;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .cancel {
+      display: none;
+      opacity: 0;
+      transition: opacity var(--transition)
+    }
+
+    .cancel.visible {
+      display: flex;
+      opacity: 1
+    }
+
+    .search-results,
+    .cf-suggestions {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      width: 100%;
+      max-height: 260px;
+      overflow-y: auto;
+      background: var(--white);
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+      display: none;
+      z-index: 1000;
+    }
+
+    .search-results.visible,
+    .cf-suggestions.visible {
+      display: block
+    }
+
+    .result-item,
+    .cf-suggestion-item {
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: background .15s
+    }
+
+    .result-item:hover,
+    .cf-suggestion-item:hover {
+      background: #f0f0f0
+    }
+
+    .cf-suggestion-img {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      object-fit: cover
+    }
+
+    .cf-suggestion-name {
+      font-weight: 600;
+      font-size: 15px
+    }
+
+    .cf-suggestion-role {
+      font-size: 13px;
+      color: #777
+    }
+
+    /* Remove default focus outline/box-shadow for the search input & container */
+    .cf-search:focus {
+      outline: none !important;
+      box-shadow: none !important;
+    }
+
+    .cf-search-container:focus-within {
+      outline: none !important;
+      box-shadow: none !important;
+    }
+
+    /* ========================
+       Category filter styles
+       ======================== */
+    .cf-filter-wrap {
+      margin-top: 40px;
+      padding: 0px 50px;
+      display: grid;
+      align-items: center;
+      gap: 10px;
+      grid-template-columns: 1fr 2fr;
+      width: 50%;
+    }
+
+    .cf-filter {
+      height: 38px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--white);
+      font-size: 14px;
+    }
+
+    @media (max-width:768px) {
+      .cf-filter-wrap {
+        padding: 0 20px;
+      }
+
+      .cf-filter {
+        width: 100%;
+        max-width: 260px;
+      }
+    }
+
+    /* ========================
+       GRID & CARDS
+       ======================== */
+    .cf-title {
+      text-align: center;
+      font-size: 26px;
+      font-weight: 600;
+      margin-bottom: 25px
+    }
+
+    .cf-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+      gap: 20px;
+      margin: 40px 0;
+      padding: 0 50px
+    }
+
+    .cf-card {
+      background: var(--white);
+      border-radius: 12px;
+      box-shadow: var(--card-shadow);
+      overflow: hidden;
+      transition: transform .18s
+    }
+
+    .cf-card:hover {
+      transform: scale(1.03)
+    }
+
+    .cf-card-grid{
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .cf-card img {
+      width: 100%;
+      height: 230px;
+      object-fit: cover;
+      display: block
+    }
+
+    .cf-card-content {
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      justify-content: start;
+    }
+
+    .cf-card-content h3 {
+      margin: 0;
+      font-size: 18px;
+      color: #222
+    }
+
+    .cf-card-content p {
+      margin: 6px 0 0;
+      font-size: 14px;
+      color: #555
+    }
+
+    .cf-card-actions {
+      padding: 15px;
+      flex: 1 1 auto;      
+      display: flex;
+      justify-content: end;
+      align-items: end;
+    }
+
+    .cf-btn-view {
+ 
+      background: #ff4d6d;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 14px;
+      cursor: pointer;
+      box-shadow: 0 8px 22px rgba(255, 77, 109, 0.18)
+    }
+
+    .cf-btn-view:hover {
+      background: #111
+    }
+
+    @media (max-width:768px) {
+      .cf-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    /* ========================
+       MODAL
+       ======================== */
+    .cf-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000
+    }
+
+    .cf-modal-content {
+      background: var(--white);
+      padding: 20px 30px;
+      border-radius: 10px;
+      max-width: 320px;
+      text-align: center
+    }
+
+    .cf-modal-content button {
+      margin-top: 15px;
+      background: #333;
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer
+    }
+
+    /* ========================
+       UTILITY SECTIONS
+       ======================== */
+    .section-intro {
+      padding: 40px 50px 10px;
+      margin-top: 30px
+    }
+
+    .section-intro h2 {
+      font-size: 35px;
+      font-weight: 700;
+      margin-bottom: 8px
+    }
+
+    .section-intro p {
+      color: var(--text-light);
+      font-size: 15px;
+      max-width: 600px
+    }
+
+    .page-section {
+      padding: 20px 50px 30px
+    }
+
+    .grid-column-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px
+    }
+
+    .grid-column-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px
+    }
+
+    .card-square,
+    .card-rectangle {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .card-square img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover
+    }
+
+    .card-content {
+      padding: 16px
+    }
+
+    .card-content h3 {
+      margin-bottom: 6px;
+      font-size: 18px
+    }
+
+    .card-content p {
+      color: var(--text-light);
+      font-size: 14px;
+      margin-bottom: 12px
+    }
+
+    .card-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      padding: 12px 16px 16px
+    }
+
+    .btn-outline,
+    .btn-fill,
+    .btn-cta {
+      padding: 20px 28px;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform .18s
+    }
+
+    .btn-outline {
+      border: 1px solid #000;
+      background: transparent;
+      color: #000
+    }
+
+    .btn-fill,
+    .btn-cta {
+      background: #000;
+      color: #fff;
+      border: none
+    }
+
+    .btn-cta {
+      display: inline-block;
+      margin-top: 30px
+    }
+
+    .btn-cta:hover {
+      transform: translateY(-2px)
+    }
+
+    footer {
+      background: #000;
+      margin-top: 100px;
+      color: #fff;
+      text-align: center;
+      padding: 24px;
+      font-size: 14px;
+      height: 200px;
+    }
+
+    /* ========================
+       CELEBS GRID (legacy rules)
+       ======================== */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-top: 28px
+    }
+
+    .drop-shadow {
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1)
+    }
+
+    /* ========================
+       Frost / glass utility
+       ======================== */
+    .frost-fog {
+      background: var(--glass-bg);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      -webkit-backdrop-filter: blur(1px);
+      backdrop-filter: blur(15px);
+    }
+
+    .frost-fog-outlined {
+      background: var(--glass-bg);
+      -webkit-backdrop-filter: blur(1px);
+      backdrop-filter: blur(15px);
+      border: #c2c2c2 solid 1px;
+    }
+
+    /* ========================
+       RESPONSIVE
+       ======================== */
+    @media (max-width:900px) {
+      .grid {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      .cf-grid {
+        padding: 0 30px
+      }
+    }
+
+    @media (max-width:768px) {
+      .nav-links {
+        display: none
+      }
+
+      .drawer-btn {
+        display: flex
+      }
+
+      .search-bar {
+        width: 200px;
+      }
+
+      .nav-left {
+        margin-right: 5px
+      }
+
+      .cf-grid {
+        padding: 0 20px
+      }
+
+      .section-cta {
+        padding: 0 20px
+      }
+
+      .grid-column-3,
+      .grid-column-2 {
+        grid-template-columns: 1fr
+      }
+
+      .grid {
+        grid-template-columns: 1fr
+      }
+    }
+
+    @media (max-width:600px) {
+      .cf-card img {
+        height: 200px
+      }
+
+      .logo {
+        height: 25px;
+      }
+
+      .cf-grid {
+        padding: 0 10px;
+        gap: 10px;
+      }
+
+      .cf-filter-wrap {
+        margin-top: 40px;
+        padding: 0px 20px;
+        gap: 10px;
+        grid-template-columns: 1fr;
+        width: 70%;
+      }
+    }
+
+    /* Mobile: transition helpers and expanded-search state */
+    @media (max-width: 768px) {
+
+      /* smooth transitions */
+      .nav-left,
+      .nav-right {
+        transition: opacity 220ms ease, transform 220ms ease;
+        will-change: opacity, transform;
+      }
+
+      /* when the search is expanded we keep the navbar compact and remove nav sections */
+      .cf-search-container.expanded {
+        width: calc(100% - 24px);
+        /* expand to nearly full width */
+        max-width: none;
+        z-index: 10010;
+        /* stay above other elements while focused */
+      }
+
+      /* hide by setting display after JS applies .hide-on-search class; CSS fallback */
+      .hide-on-search {
+        display: none !important;
+        opacity: 0 !important;
+        transform: translateY(-4px);
+      }
+
+      /* small visual tweak for the cancel button when visible */
+      .cancel.visible {
+        opacity: 1;
+        transition: opacity 160ms ease;
+      }
+    }
+
+
+    /* ========================
+       Drawer menu styles (minimal & scoped)
+       ======================== */
+    #drawerMenu {
+      position: fixed;
+      top: var(--nav-height);
+      right: 0;
+      width: 220px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      border-left: 1px solid #ddd;
+      box-shadow: -2px 0 8px rgba(0, 0, 0, 0.08);
+      padding: 14px 16px;
+      display: none;
+      z-index: 9998;
+    }
+
+    #drawerMenu a {
+      display: block;
+      padding: 10px 6px;
+      color: rgba(0, 0, 0, 0.85);
+      text-decoration: none;
+      border-radius: 6px;
+    }
+
+    #drawerMenu a.active-text {
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    #drawerMenu a:hover {
+      background: #fafafa;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navbar -->
+  <nav class="navbar frost-fog">
+
+    <div class="nav-left">
+      <div><img class="logo" src="images/starbook_row_large_icon.png" alt="StarBook"></div>
+    </div>
+
+    <!-- Search pill sits in the center-left area of the navbar -->
+    <div id="searchBox" role="search" class="cf-search-container frost-fog-outlined"
+      style="position:relative; margin:0 5px; ">
+      <button id="cf-search-btn" class="cf-search-btn">Search</button>
+      <input type="text" id="cf-search" class="cf-search cf-search-placeholder"
+        placeholder="Search celebrity or event..." autocomplete="on" />
+      <button class="cancel" id="cancelBtn" aria-label="Cancel search">✖</button>
+      <div id="cf-suggestions" class="cf-suggestions" aria-hidden="true"></div>
+    </div>
+
+    <div class="nav-right">
+      <div class="nav-links">
+      <a href="index.html" class="nav-text">Home</a>
+      <a href="celebrities.html" class="nav-text active-text">Book a celebrity</a>
+      <!--<a href="events.html" class="nav-text">Events</a>-->
+      <a href="contact.html" class="nav-text">Contact us</a>
+      <a href="how.html" class="nav-text">How it works</a>
+      </div>
+      <button class="drawer-btn" id="drawerToggle" aria-label="Open menu">☰</button>
+    </div>
+
+    <!-- Drawer Menu (hidden by default; toggled on mobile) -->
+    <div id="drawerMenu" aria-hidden="true">
+      <a href="index.html" class="nav-text">Home</a>
+      <a href="celebrities.html" class="nav-text active-text">Book a celebrity</a>
+      <!--<a href="events.html" class="nav-text">Events</a>-->
+      <a href="contact.html" class="nav-text">Contact us</a>
+      <a href="how.html" class="nav-text">How it works</a>
+    </div>
+  </nav>
+
+
+
+
+  <!-- ===================================== CELEBRITY SECTION ============================================== -->
+
+  <!-- Category filter (placed just before celebrity grid) -->
+  <div class="cf-filter-wrap">
+    <p>Filter by category</p>
+    <select id="cf-category-filter" class="cf-filter" aria-label="Filter celebrities by category">
+      <option value="all">All categories</option>
+      <!-- options will be populated dynamically -->
+    </select>
+  </div>
+
+  <!-- Celebrity Grid -->
+  <section id="cf-grid-celebs" class="cf-grid"></section>
+  <!--------------------->
+
+
+  <!-- ======================================================================================================== -->
+
+
+
+
+
+  <!-- FOOTER -->
+  <footer>
+    StarBook © 2025 | Contact: support@starbook.com | Feedback | Created Oct 2025
+  </footer>
+
+  <!-- Modal -->
+  <div id="cf-modal" class="cf-modal frost-dark">
+    <div class="cf-modal-content">
+      <h3>Result not found</h3>
+      <p>Sorry, we couldn’t find a matching celebrity or event.</p>
+      <button id="cf-modal-close">Close</button>
+    </div>
+  </div>
+
+  <script src="scripts/data.js"></script>
+
+  <!-- Drawer toggle & outside-click close; minimal and scoped -->
+  <script>
+    (function () {
+      const drawerToggle = document.getElementById("drawerToggle");
+      const drawerMenu = document.getElementById("drawerMenu");
+
+      if (!drawerToggle || !drawerMenu) return;
+
+      const openDrawer = () => {
+        drawerMenu.style.display = "block";
+        drawerMenu.setAttribute("aria-hidden", "false");
+      };
+      const closeDrawer = () => {
+        drawerMenu.style.display = "none";
+        drawerMenu.setAttribute("aria-hidden", "true");
+      };
+
+      drawerToggle.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (drawerMenu.style.display === "block") closeDrawer();
+        else openDrawer();
+      });
+
+      // Close when clicking outside the drawer or the toggle
+      document.addEventListener("click", (e) => {
+        const target = e.target;
+        if (!drawerMenu.contains(target) && !drawerToggle.contains(target)) {
+          closeDrawer();
+        }
+      });
+
+      // Close on ESC
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeDrawer();
+      });
+    })();
+
+
+    document.addEventListener("DOMContentLoaded", () => {
+      if (document.querySelector("#cf-grid-celebs")) cfInitHome();
+      else if (document.querySelector("#cf-profile")) cfInitCeleb();
+      else if (document.querySelector("#cf-event")) cfInitEvent();
+    });
+    //=================================================================================================================
+
+
+
+    //========================================================= HOME PAGE ==============================================
+    //==================================================================================================================
+    //==================================================================================================================
+    function cfInitHome() {
+      const celebGrid = document.querySelector("#cf-grid-celebs");
+      const eventGrid = document.querySelector("#cf-grid-events");
+      const searchInput = document.querySelector("#cf-search");
+      const suggestions = document.querySelector("#cf-suggestions");
+      const searchBtn = document.querySelector("#cf-search-btn");
+      const modal = document.querySelector("#cf-modal");
+      const modalClose = document.querySelector("#cf-modal-close");
+
+      // new: cancel button
+      const cancelBtn = document.getElementById('cancelBtn');
+
+      // -------------------------
+      // Category filter setup
+      // -------------------------
+      const categorySelect = document.getElementById('cf-category-filter');
+
+      // build unique categories from FALLBACK_CELEBS (use role as category)
+      const categories = Array.from(new Set(FALLBACK_CELEBS.map(c => (c.role || 'Uncategorized').trim()))).sort();
+      // populate select
+      categories.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.textContent = cat;
+        categorySelect.appendChild(opt);
+      });
+
+      // -------------------------
+      // Render function (respects current category + optional search)
+      // -------------------------
+      function renderCelebs(opts = {}) {
+        // opts.filterCategory: string or 'all'
+        // opts.query: optional search query string to further filter results
+        const { filterCategory = 'all', query = '' } = opts;
+        celebGrid.innerHTML = ''; // clear
+
+        const q = String(query || '').trim().toLowerCase();
+
+        // derive list according to filters
+        const list = FALLBACK_CELEBS.filter(c => {
+          const matchesCategory = (filterCategory === 'all') ? true : ((c.role || '').trim() === filterCategory);
+          const matchesQuery = !q ? true : (c.name.toLowerCase().includes(q) || (c.role || '').toLowerCase().includes(q));
+          return matchesCategory && matchesQuery;
+        });
+
+        // render cards
+        list.forEach(c => {
+          const card = document.createElement("article");
+          card.className = "cf-card";
+          card.innerHTML = `
+        <diV class="cf-card-grid">
+          <img src="${c.image}" alt="${c.name}">
+          <div class="cf-card-content">
+            <h3>${c.name}</h3>
+            <p>${c.role}</p>
+          </div>
+          <div class="cf-card-actions">
+            <button class="cf-btn-view" data-type="celeb" data-id="${c.id}">View & Book</button>
+          </div>
+        </div>`;
+          celebGrid.appendChild(card);
+        });
+
+        // if no results show a friendly message
+        if (list.length === 0) {
+          const empty = document.createElement('div');
+          empty.style.gridColumn = '1/-1';
+          empty.style.padding = '28px';
+          empty.style.textAlign = 'center';
+          empty.style.color = '#666';
+          empty.textContent = 'No celebrities found for the selected category.';
+          celebGrid.appendChild(empty);
+        }
+      }
+
+      // initial render (all)
+      renderCelebs({ filterCategory: 'all' });
+
+      // when category changes, re-render
+      categorySelect.addEventListener('change', () => {
+        const cat = categorySelect.value;
+        // also preserve current search query
+        const currentQuery = searchInput.value.trim();
+        renderCelebs({ filterCategory: cat, query: currentQuery });
+        // hide suggestions if open
+        suggestions.style.display = 'none';
+      });
+
+      //============================================= Click handlers =================================================
+      document.body.addEventListener("click", e => {
+        if (e.target.classList.contains("cf-btn-view")) {
+          const type = e.target.dataset.type;
+          const id = e.target.dataset.id;
+          if (type === "celeb") window.location.href = `celebinfo.html?id=${id}`;
+          else window.location.href = `eventinfo.html?id=${id}`;
+        }
+      });
+      //===============================================================================================================
+
+
+
+      //============================================ Search suggestions ===============================================
+      searchInput.addEventListener("input", () => {
+        const q = searchInput.value.trim().toLowerCase();
+        suggestions.innerHTML = "";
+        // show/hide cancel button based on input
+        if (cancelBtn) {
+          if (searchInput.value.trim().length > 0) {
+            cancelBtn.classList.add('visible');
+            cancelBtn.style.display = 'flex';
+          } else {
+            cancelBtn.classList.remove('visible');
+            cancelBtn.style.display = 'none';
+          }
+        }
+
+        if (!q) {
+          suggestions.style.display = "none";
+          // re-render cards to honor category with empty query
+          renderCelebs({ filterCategory: categorySelect.value || 'all', query: '' });
+          return;
+        }
+
+        const celebMatches = FALLBACK_CELEBS.filter(c => c.name.toLowerCase().includes(q));
+        const eventMatches = FALLBACK_EVENTS.filter(e => e.name.toLowerCase().includes(q));
+
+        const results = [...celebMatches.map(c => ({ type: "celeb", ...c })), ...eventMatches.map(e => ({ type: "event", ...e }))];
+
+
+
+
+        if (results.length === 0) {
+          suggestions.innerHTML = `<div class="cf-suggestion-item"><div class="cf-suggestion-info"><span class="cf-suggestion-name">No matching results</span></div></div>`;
+          suggestions.style.display = "block";
+          return;
+        }
+
+        results.slice(0, 8).forEach(r => {
+          const item = document.createElement("div");
+          item.className = "cf-suggestion-item";
+          item.innerHTML = `
+        <img src="${r.image}" alt="${r.name}" class="cf-suggestion-img">
+        <div class="cf-suggestion-info">
+          <span class="cf-suggestion-name">${r.name}</span>
+          <span class="cf-suggestion-role">${r.type === "celeb" ? r.role : r.venue}</span>
+        </div>`;
+          item.addEventListener("click", () => {
+            searchInput.value = r.name;
+            suggestions.style.display = "none";
+            // update cancel visibility when a suggestion is chosen
+            if (cancelBtn) {
+              cancelBtn.classList.add('visible');
+              cancelBtn.style.display = 'flex';
+            }
+            // when a suggestion chosen, show results filtered by category + query (keeps current category)
+            renderCelebs({ filterCategory: categorySelect.value || 'all', query: r.name });
+          });
+
+          suggestions.appendChild(item);
+        });
+        suggestions.style.display = "block";
+
+      });
+
+
+
+
+      //============================================================================================================
+
+
+
+      // ============================================== Search button ==================================================
+      searchBtn.addEventListener("click", () => {
+        const q = searchInput.value.trim().toLowerCase();
+        if (!q) return;
+        const celeb = FALLBACK_CELEBS.find(c => c.name.toLowerCase() === q);
+        const event = FALLBACK_EVENTS.find(e => e.name.toLowerCase() === q);
+
+        if (celeb) window.location.href = `celebinfo.html?id=${celeb.id}`;
+        else if (event) window.location.href = `eventinfo.html?id=${event.id}`;
+        else modal.style.display = "flex";
+      });
+
+      //when user click enter key when typing on the search bar
+      searchInput.addEventListener('keypress', (event) => {
+        if (event.key === "Enter") {
+          searchBtn.click();
+        }
+      });
+
+      modalClose.addEventListener("click", () => (modal.style.display = "none"));
+      modal.addEventListener("click", e => { if (e.target === modal) modal.style.display = "none"; });
+
+      // ===== cancel button behavior =====
+      if (cancelBtn) {
+        // initialize visibility
+        cancelBtn.style.display = searchInput.value.trim().length > 0 ? 'flex' : 'none';
+
+        cancelBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          searchInput.value = '';
+          suggestions.style.display = 'none';
+          cancelBtn.classList.remove('visible');
+          cancelBtn.style.display = 'none';
+          searchInput.focus();
+          // re-render celebs for current category when cleared
+          renderCelebs({ filterCategory: categorySelect.value || 'all', query: '' });
+        });
+      }
+    }
+
+    //==================================================================================================================
+    //==================================================================================================================
+    //==================================================================================================================
+
+
+    /* MOBILE SEARCH FOCUS: hide left/right nav and drawer while input focused.
+       Uses focus on the input to drive all behavior (expand/collapse).
+       Works only when viewport <= 768px. */
+
+    (function () {
+      const INPUT_ID = "cf-search";           // your search input id
+      const SEARCH_BOX_ID = "searchBox";      // your search container id
+      const CANCEL_ID = "cancelBtn";          // cancel button id
+      const SEARCH_BTN_ID = "cf-search-btn";  // optional search button id
+      const NAV_LEFT_SELECTOR = ".nav-left";
+      const NAV_RIGHT_SELECTOR = ".nav-right";
+      const DRAWER_ID = "drawerMenu";
+
+      const DURATION = 500; // matches CSS timing (ms)
+      const MQ = window.matchMedia("(max-width: 768px)");
+
+      const searchInput = document.getElementById(INPUT_ID);
+      const searchBox = document.getElementById(SEARCH_BOX_ID);
+      const cancelBtn = document.getElementById(CANCEL_ID);
+      const searchBtn = document.getElementById(SEARCH_BTN_ID);
+      const navLeft = document.querySelector(NAV_LEFT_SELECTOR);
+      const navRight = document.querySelector(NAV_RIGHT_SELECTOR);
+      const drawer = document.getElementById(DRAWER_ID);
+
+      if (!searchInput || !searchBox || !navLeft || !navRight) return;
+
+      let expanded = false;
+      let collapseTimeout = null;
+
+      function isMobile() {
+        return MQ.matches;
+      }
+
+      function doExpand() {
+        if (!isMobile() || expanded) return;
+        expanded = true;
+
+        // fade out
+        navLeft.style.transition = `opacity ${DURATION}ms ease, transform ${DURATION}ms ease`;
+        navRight.style.transition = `opacity ${DURATION}ms ease, transform ${DURATION}ms ease`;
+        navLeft.style.opacity = "0";
+        navRight.style.opacity = "0";
+        navLeft.style.transform = "translateY(-4px)";
+        navRight.style.transform = "translateY(-4px)";
+
+        // after fade, set display none so they do not take space
+        clearTimeout(collapseTimeout);
+        collapseTimeout = setTimeout(() => {
+          navLeft.classList.add("hide-on-search");
+          navRight.classList.add("hide-on-search");
+          // close drawer if open
+          if (drawer) drawer.style.display = "none";
+          // expand the search pill
+          searchBox.classList.add("expanded");
+          // show cancel button if exists
+          if (cancelBtn) cancelBtn.classList.add("visible");
+        }, DURATION);
+      }
+
+      function doCollapse() {
+        if (!expanded) return;
+        expanded = false;
+
+        // remove 'expanded' and make navs display again
+        searchBox.classList.remove("expanded");
+        if (cancelBtn) cancelBtn.classList.remove("visible");
+
+        // restore display immediately so layout returns, then fade in
+        navLeft.classList.remove("hide-on-search");
+        navRight.classList.remove("hide-on-search");
+
+        // small delay ensures the browser registers display change before animating opacity
+        setTimeout(() => {
+          navLeft.style.opacity = "1";
+          navRight.style.opacity = "1";
+          navLeft.style.transform = "translateY(0)";
+          navRight.style.transform = "translateY(0)";
+        }, 25);
+      }
+
+      // focus-driven: expand on focus
+      searchInput.addEventListener("focus", (e) => {
+        // only on mobile
+        if (!isMobile()) return;
+        // ensure we don't accidentally trigger while already expanded
+        doExpand();
+      });
+
+      // cancel button collapses & clears (if exists)
+      if (cancelBtn) {
+        cancelBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          searchInput.value = "";
+          // hide suggestions if you have them
+          const suggestions = document.getElementById("cf-suggestions");
+          if (suggestions) suggestions.style.display = "none";
+          // collapse
+          doCollapse();
+          // return focus (optional)
+          searchInput.blur();
+        });
+      }
+
+      // search button optionally collapses (like your example)
+      if (searchBtn) {
+        searchBtn.addEventListener("click", () => {
+          // allow the normal search flow to run, then collapse the mobile nav
+          if (isMobile()) setTimeout(doCollapse, 80);
+        });
+      }
+
+      // clicking outside the searchBox collapses the expanded state
+      document.addEventListener("pointerdown", (e) => {
+        if (!isMobile()) return;
+        // if click target is inside the search box, ignore
+        if (searchBox.contains(e.target)) return;
+        // otherwise collapse
+        doCollapse();
+      });
+
+      // ESC should collapse as well
+      document.addEventListener("keydown", (e) => {
+        if (!isMobile()) return;
+        if (e.key === "Escape") {
+          doCollapse();
+          if (document.activeElement === searchInput) searchInput.blur();
+        }
+      });
+
+      // when viewport changes to desktop, ensure nav is visible
+      MQ.addEventListener ? MQ.addEventListener("change", (m) => {
+        if (!m.matches) {
+          // desktop: make sure everything visible
+          doCollapse();
+        }
+      }) : MQ.addListener((m) => { if (!m.matches) doCollapse(); });
+    })();
+
+  </script>
+
+</body>
+
+</html>

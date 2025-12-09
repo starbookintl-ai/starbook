@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StarBook | How it Works</title>
+
+<style>
+/* ==============================
+   Root/Shared variables
+============================== */
+:root{
+  --accent:#111;
+  --light-bg:#f8f8f8;
+  --text-dark:#111;
+  --muted:#6d8488;
+  --white:#fff;
+  --accent-cta:#ff4d6d;
+  --transition:0.35s;
+  --glass-bg:rgba(255,255,255,0.45);
+  --shadow:0 6px 26px rgba(0,0,0,0.08);
+  --nav-height:64px;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Inter',system-ui;
+  background:var(--light-bg);
+  color:var(--text-dark);
+  padding-top:var(--nav-height);
+}
+
+/* ==============================
+   NAVBAR (same as your original)
+============================== */
+.navbar{
+  position:fixed;top:0;left:0;right:0;
+  height:var(--nav-height);
+  backdrop-filter:blur(10px) saturate(150%);
+  background:var(--glass-bg);
+  display:flex;align-items:center;
+  justify-content:space-between;
+  padding:0 20px;z-index:9999;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+.nav-left,.nav-right{display:flex;align-items:center;gap:18px}
+.nav-links{display:flex;gap:26px}
+.nav-text{
+  text-decoration:none;color:#222;font-size:15px;
+}
+.active-text{font-weight:700;color:var(--text-dark)}
+.logo{height:30px}
+
+.drawer-btn{display:none}
+
+/* drawer */
+#drawerMenu{
+  position:fixed;top:var(--nav-height);right:0;
+  width:220px;background:#fffddf;
+  background:rgba(255,255,255,0.95);
+  backdrop-filter:blur(10px);
+  box-shadow:-2px 0 8px rgba(0,0,0,0.1);
+  padding:14px 16px;display:none;z-index:9998;
+}
+#drawerMenu a{
+  display:block;padding:10px;border-radius:6px;
+  color:#222;text-decoration:none;
+}
+#drawerMenu a:hover{background:#f4f4f4}
+
+/* ===============================
+   HERO — slim, clean, how-it-works style
+=============================== */
+.how-hero{
+  width:100%;padding:60px 20px 70px;
+  text-align:center;margin-top:10px;
+  background:linear-gradient(180deg,#fff,#f3f3f3);
+  box-shadow:0 4px 20px rgba(0,0,0,0.06);
+}
+.how-title{
+  font-size:34px;font-weight:800;letter-spacing:-0.5px;
+}
+.how-sub{
+  margin-top:10px;font-size:16px;
+  color:var(--muted);max-width:680px;margin-inline:auto;
+}
+
+/* ===============================
+   3-step cards
+=============================== */
+.steps{
+  max-width:1100px;margin:50px auto 30px;padding:0 30px;
+  display:grid;grid-template-columns:repeat(3,1fr);gap:24px;
+}
+.step-card{
+  background:var(--white);border-radius:14px;padding:24px;
+  box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px;
+  transition:transform .25s ease;
+}
+.step-card:hover{transform:translateY(-6px)}
+.step-number{
+  width:42px;height:42px;border-radius:50%;
+  background:var(--accent-cta);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;font-weight:700;
+}
+.step-card h3{font-size:18px;margin:0}
+.step-card p{color:var(--muted);font-size:14px}
+
+/* ===============================
+   Workflow timeline
+=============================== */
+.timeline{
+  max-width:900px;margin:60px auto;padding:0 30px;
+}
+.timeline h2{
+  font-size:24px;margin-bottom:16px;text-align:center;
+}
+.tline-item{
+  background:#fff;padding:18px;border-radius:12px;
+  box-shadow:var(--shadow);margin-bottom:18px;
+}
+.tline-item b{color:var(--accent)}
+.tline-item p{margin-top:6px;color:var(--muted);line-height:1.4}
+
+/* ===============================
+   CTA section
+=============================== */
+.big-cta{
+  max-width:1100px;margin:60px auto;
+  background:#fff;padding:40px;border-radius:14px;
+  box-shadow:var(--shadow);text-align:center;
+}
+.big-cta h2{font-size:26px;margin-bottom:10px}
+.big-cta p{color:var(--muted);margin-bottom:20px}
+.btn-primary{
+  padding:13px 22px;border:none;border-radius:10px;
+  background:var(--accent-cta);color:#fff;
+  font-weight:700;cursor:pointer;
+  box-shadow:0 6px 18px rgba(255,77,109,0.25);
+}
+
+/* Responsive */
+@media(max-width:900px){
+  .steps{grid-template-columns:1fr 1fr}
+}
+@media(max-width:700px){
+  .steps{grid-template-columns:1fr}
+}
+@media(max-width:768px){
+  .nav-links{display:none}
+  .drawer-btn{display:block;font-size:24px;border:none;background:none}
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-left">
+    <img class="logo" src="images/starbook_row_large_icon.png">
+  </div>
+  <div class="nav-right">
+    <div class="nav-links">
+      <a href="index.html" class="nav-text">Home</a>
+      <a href="celebrities.html" class="nav-text">Book a celebrity</a>
+      <a href="contact.html" class="nav-text">Contact us</a>
+      <a href="how.html" class="nav-text active-text">How it works</a>
+    </div>
+    <button class="drawer-btn" id="drawerToggle">☰</button>
+  </div>
+
+  <div id="drawerMenu">
+    <a href="index.html">Home</a>
+    <a href="celebrities.html">Book a celebrity</a>
+    <a href="contact.html">Contact us</a>
+    <a href="how.html" class="active-text">How it works</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="how-hero">
+  <h1 class="how-title">How StarBook Works</h1>
+  <p class="how-sub">
+    A seamless, secure and intelligent process — from browsing talent to finalizing your booking.  
+    Whether it’s a global campaign, a private event or a meet & greet, StarBook handles everything.
+  </p>
+</section>
+
+<!-- 3-STEP WORKFLOW -->
+<section class="steps">
+  <div class="step-card">
+    <div class="step-number">1</div>
+    <h3>Explore Celebrities</h3>
+    <p>Browse verified profiles, view past events, availability, pricing and portfolio media.</p>
+  </div>
+
+  <div class="step-card">
+    <div class="step-number">2</div>
+    <h3>Send a Booking Request</h3>
+    <p>Submit your event details — our system notifies the talent team instantly.</p>
+  </div>
+
+  <div class="step-card">
+    <div class="step-number">3</div>
+    <h3>Confirm & Finalize</h3>
+    <p>Approve the quote, sign the digital contract, and make secure payments in minutes.</p>
+  </div>
+</section>
+
+<!-- DETAILED TIMELINE -->
+<section class="timeline">
+  <h2>Full Booking Timeline</h2>
+
+  <div class="tline-item">
+    <b>Profile Discovery</b>
+    <p>View verified profiles, audience insights, past collaborations, performance history, and sample videos.</p>
+  </div>
+
+  <div class="tline-item">
+    <b>Request Submission</b>
+    <p>Provide event type, venue, expected audience size, and your preferred date & budget.</p>
+  </div>
+
+  <div class="tline-item">
+    <b>Talent Review</b>
+    <p>StarBook reaches out to the celebrity's management with your request, ensuring fast response time.</p>
+  </div>
+
+  <div class="tline-item">
+    <b>Quotation & Contract</b>
+    <p>You receive an official quote and a digital agreement — fully secure and legally compliant.</p>
+  </div>
+
+  <div class="tline-item">
+    <b>Event Day Coordination</b>
+    <p>Our team assists with logistics, schedules, arrival planning, and performance checks.</p>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="big-cta">
+  <h2>Ready to book a celebrity?</h2>
+  <p>Start browsing hundreds of world-class talents available for events, campaigns and activations.</p>
+  <button class="btn-primary" onclick="window.location.href='celebrities.html'">Browse Celebrities</button>
+</section>
+
+<footer style="text-align:center;padding:20px 0;color:#666;">
+  StarBook © 2025 — All Rights Reserved
+</footer>
+
+<script>
+/* drawer toggle */
+const drawer = document.getElementById("drawerMenu");
+const toggle = document.getElementById("drawerToggle");
+toggle.onclick = ()=> drawer.style.display = drawer.style.display==="block"?"none":"block";
+document.onclick = (e)=>{
+  if(!drawer.contains(e.target) && !toggle.contains(e.target)){
+    drawer.style.display="none";
+  }
+};
+</script>
+
+</body>
+</html>

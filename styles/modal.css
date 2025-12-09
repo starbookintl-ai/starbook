@@ -1,0 +1,87 @@
+  /* MODAL */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(255, 255, 255, 0);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 1000;
+  }
+
+  .modal {
+    width: 100%;
+    max-width: 720px;
+    background: linear-gradient(180deg, #ffffff, #ffffff);
+    border-radius: 14px;
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.04)
+  }
+
+  .modal h2 {
+    margin: 0 0 8px
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px
+  }
+
+  .field input,
+  .field textarea,
+  .field select {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.233);
+    background: white;
+    color: inherit
+  }
+
+  .column-resp-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .column-resp-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+  }
+
+  .column-4 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 8px;
+  }
+
+  .column-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .column-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+  }
+
+  .column-resp-4 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 8px;
+  }
+
+  .actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 8px;
+  }
+
+  @media (max-width: 768px) {
+    .column-resp-2, .column-resp-3, .column-resp-4{
+         grid-template-columns: 1fr;
+       }
+  }

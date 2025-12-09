@@ -1,0 +1,388 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StarBook | Profile</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      padding: 0px;
+      margin: 0px;
+    }
+
+    body {
+      margin: 0px;
+      padding: 0px;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      height: 100%;
+    }
+
+    .cf-body {
+      display: flex;
+      flex-direction: column;
+      color: #333;
+      line-height: 1.6;
+      min-height: 100%;
+    }
+
+
+
+    /* HEADER */
+    .cf-profile-header {
+      position: relative;
+      width: 100%;
+      height: 400px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      flex-shrink: 0;
+    }
+
+    .celeb-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(60%);
+      transition: transform 6s ease;
+    }
+
+    .cf-profile-header:hover .celeb-image {
+      transform: scale(1.1);
+    }
+
+    .cf-profile-info {
+      width: 100%;
+      position: absolute;
+      top: 0;
+      padding: 30px 50px;
+      color: white;
+      height: 100%;
+    }
+
+    .cf-profile-info-top {
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    .cf-profile-info-bottom {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      justify-content: flex-end;
+      padding-bottom: 70px;
+    }
+
+
+    .cf-profile-info h1 {
+      margin: 0;
+      font-size: 40px;
+      letter-spacing: 1px;
+    }
+
+    .cf-profile-info p {
+      font-size: 18px;
+      color: #ddd;
+      margin-top: 8px;
+    }
+
+    .cf-availability {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 15px;
+    }
+
+    .cf-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .cf-dot.available {
+      background: #4CAF50;
+    }
+
+    .cf-dot.limited {
+      background: #FFC107;
+    }
+
+    .cf-dot.unavailable {
+      background: #F44336;
+    }
+
+    /* CONTENT */
+    .cf-content {
+      width: 100%;
+      background: white;
+      padding: 40px 40px 50px 40px;
+      margin-top: -20px;
+      border-radius: 20px 20px 0px 0px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      position: relative;
+      z-index: 10;
+    }
+
+    .cf-content-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-gap: 20px;
+    }
+
+    .cf-booking-form-container {
+      display: flex;
+      flex-direction: column;
+      border-radius: 20px;
+      background-color: #f7f7f7;
+      padding: 20px;
+      width: 100%;
+      min-height: 500px;
+    }
+
+    .cf-form-input-holder {
+      display: flex;
+      border-radius: 5px;
+      background-color: white;
+      padding: 5px;
+      width: 100%;
+      height: 40px;
+    }
+
+    .cf-content h3 {
+      font-size: 24px;
+      color: #222;
+      margin-bottom: 12px;
+    }
+
+    .cf-content p {
+      color: #555;
+      margin-bottom: 20px;
+      font-size: 17px;
+    }
+
+    /* GRID */
+    .cf-booking-grid {
+      display: grid;
+      /*grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));*/
+      grid-template-columns: 1fr;
+      gap: 25px;
+      margin-top: 30px;
+    }
+
+    .cf-card {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      padding: 20px;
+    }
+
+
+
+    .cf-card-header {
+      height: 160px;
+      width: 100%;
+      background: #ddd center/cover no-repeat;
+      position: relative;
+    }
+
+    .cf-card-header::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+    }
+
+    .cf-card-header h4 {
+      position: absolute;
+      bottom: 10px;
+      left: 15px;
+      color: #fff;
+      font-size: 20px;
+      z-index: 2;
+    }
+
+    .cf-card-body {
+      display: flex;
+      gap: 20px;
+      text-align: center;
+    }
+
+    .cf-card-body p {
+      font-size: 18px;
+      font-weight: bold;
+      color: #222;
+      margin: 10px 0;
+    }
+
+    .cf-btn-book {
+      background: linear-gradient(135deg, #333, #555);
+      color: white;
+      border: none;
+      padding: 12px 26px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .cf-btn-book:hover {
+      background: linear-gradient(135deg, #000, #333);
+      transform: translateY(-2px);
+    }
+
+
+    /* RESPONSIVE MOBILE */
+    @media (max-width: 768px) {
+      .cf-content {
+      padding: 40px 30px;
+    }
+
+      .cf-profile-info {
+        padding: 30px 30px;
+      }
+
+      .cf-profile-info h1 {
+        font-size: 30px;
+      }
+
+      .cf-content-body {
+        grid-template-columns: 1fr;
+      }
+
+
+      .cf-card {
+        transform: translateY(40px);
+        opacity: 0;
+        transition: all 0.8s ease;
+      }
+
+      .cf-card.visible {
+        transform: translateY(0);
+        opacity: 1;
+        animation: waveFade 0.9s ease forwards;
+      }
+
+      /* WAVE FADE */
+      @keyframes waveFade {
+        0% {
+          transform: translateY(40px);
+          opacity: 0;
+        }
+
+        100% {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="styles/modal.css">
+
+</head>
+
+<body>
+
+  <div class="cf-body">
+    <div id="cf-profile">
+
+      <div class="cf-profile-header">
+        <img id="cf-image" src="${c.image}" alt="Celebrity Image" class="celeb-image">
+
+        <div class="cf-profile-info">
+
+          <div class="cf-profile-info-top" >
+            <img src="images/starbook-logo-white.png" alt="" style="height: 30px;">
+            <button id="bookBtn" style="
+            cursor: pointer; 
+            font-weight: bold; 
+            color: white; 
+            display: flex; 
+            padding: 10px 30px; 
+            border-radius: 10px; 
+            border: 1px solid white; 
+            background-color: transparent;">Book Now</button>
+          </div>
+
+          <div class="cf-profile-info-bottom">
+            <h1 id="cf-name">${c.name}</h1>
+            <p id="cf-role"></p>
+            <div class="cf-availability" id="cf-availability">
+              <span class="cf-dot available"></span> <span id="cf-availability-value">Available</span> for booking
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="cf-content">
+        <div class="cf-content-body">
+
+
+
+          <div class="cf-content-left">
+            <div>
+              <h3 id="cf-bio-heading">The Modern Icon of Entertainment</h3>
+              <p id="cf-bio-body">This celebrity is an award-winning performer known for global influence, artistry, and
+                fan connection across multiple entertainment platforms.</p>
+            </div>
+          </div>
+
+
+
+          <div class="cf-content-right">
+            <div class="celeb-stats column-3">
+              <div>
+                <h3>Rating</h3>
+                <p>
+                  <span><img src="images/star_white.png" alt=""
+                      style="height:15px;width:15px;object-fit:contain;"></span>
+                  <span id="cf-rating"></span> / 5
+                </p>
+              </div>
+
+              <div>
+                <h3>Age</h3>
+                <p id="cf-age"></p>
+              </div>
+
+              <div>
+                <h3>Base</h3>
+                <p>
+                  <span><img src="images/location_gray.png" alt=""
+                      style="height:15px;width:15px;object-fit:contain;"></span>
+                  <span id="cf-base"></span>
+                </p>
+              </div>
+
+            </div>
+            <div>
+              <h3>Related Event(s)</h3>
+              <p id="cf-upcoming-events">
+                This celebrity is an award-winning performer known for global influence, artistry, and
+                fan connection across multiple entertainment platforms.
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+
+
+
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Your data and script links -->
+  <script src="scripts/data.js"></script>
+  <script src="scripts/script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,742 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>StarBook | Booking Form</title>
+<style>
+  :root{
+    --bg-1:#f4f6fb;
+    --card:#ffffff;
+    --accent:#5c00b8;
+    --accent-2:#001f80;
+    --muted:#6b7280;
+    --success:#16a34a;
+    --danger:#dc2626;
+    --input-border:#d1d5db;
+    --radius:12px;
+  }
+
+  body{
+    margin:0;
+    font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+    background: linear-gradient(180deg, #eef2ff 0%, #f8fafc 100%);
+    color:#0f172a;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .wrap{
+    min-height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:32px 16px;
+  }
+
+  .card{
+    width:100%;
+    max-width:var(--max-width);
+    background:var(--card);
+    border-radius:var(--radius);
+    box-shadow:0 10px 30px rgba(2,6,23,0.08);
+    padding:28px;
+  }
+
+  header.form-head{
+    margin-top: 20px;
+    display:flex;
+    gap:16px;
+    align-items:center;
+    margin-bottom:18px;
+  }
+
+  .brand {
+    object-fit: cover;
+    width:64px;height:64px;border-radius:10px;
+    background:gray;
+    display:flex;align-items:center;justify-content:center;color:white;font-weight:700;
+    box-shadow:0 6px 18px rgba(92,0,184,0.15);
+    flex:0 0 64px;
+  }
+
+  h1{font-size:20px;margin:0;color: black;letter-spacing:-0.2px}
+  p.lead{margin:0;color:var(--muted);font-size:14px}
+
+  form#bookingForm{
+    margin-top:14px;
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:12px 16px;
+    align-items:start;
+  }
+
+  label{
+    font-size:13px;color:#111827;margin-bottom:6px;display:block;font-weight:600;
+  }
+
+  .full2 { grid-column: 1 / -2; }
+  .full1 { grid-column: 1 / -1; }
+
+  input[type="text"], input[type="email"], input[type="tel"], input[type="date"],
+  select, textarea {
+    width:100%;
+    padding:10px 12px;
+    font-size:14px;
+    border:1px solid var(--input-border);
+    border-radius:8px;
+    background:white;
+    color:#0f172a;
+    box-sizing:border-box;
+    outline-offset:2px;
+  }
+
+  textarea { min-height:110px; resize:vertical; }
+
+  input:disabled, textarea:disabled, input:read-only {
+    background:#f8fafc;color:#9ca3af; cursor:default;
+  }
+
+  .help { font-size:12px;color:var(--muted);margin-top:6px; }
+
+  .price-display { font-size:13px; color:var(--accent); margin-top:6px; font-weight:600; }
+
+  .actions { display:flex; gap:12px; align-items:center; grid-column:1 / -1; margin-top:6px; }
+  button.primary {
+    background: #ff4d6d;
+    color:#fff;border:none;padding:12px 16px;border-radius:10px;
+    font-weight:700;cursor:pointer;font-size:15px;
+  }
+  button.primary[disabled]{opacity:0.6;cursor:not-allowed}
+
+  .status {
+    font-size:14px;padding:10px 12px;border-radius:10px;
+    display:inline-block;
+  }
+  .success { background: #ecfdf5;color:var(--success);border:1px solid rgba(16,185,129,0.12); }
+  .error   { background: #fff1f2;color:var(--danger);border:1px solid rgba(220,38,38,0.06); }
+
+  @media (max-width:760px){
+    form#bookingForm{ grid-template-columns:1fr; }
+    .brand{width:56px;height:56px}
+  }
+
+  .small { font-size:13px;color:var(--muted) }
+
+  .navbar{display: flex; align-items: center; gap: 30px; box-shadow:0 2px 8px rgba(0,0,0,0.08);padding:12px 20px;position:sticky;top:0;z-index:20;background:rgba(255,255,255,0.6);backdrop-filter:blur(6px)}
+  .navbar img{height:30px;object-fit:contain}
+  .cf-back-button {cursor: pointer; box-sizing: border-box;  padding: 3px; border-radius: 5px;}
+
+
+  .modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 420px;
+  text-align: center;
+  animation: pop .3s ease-out;
+}
+
+.modal-content p{
+  margin-bottom: 0px;
+}
+
+@keyframes pop {
+  from { transform: scale(0.75); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+#closeModal {
+  margin-top: 15px;
+  padding: 10px 18px;
+  border: none;
+  background: #2a6ef1;
+  color: #fff;
+  font-size: 15px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+
+</style>
+</head>
+<body>
+  <div class="navbar frost-fog" id="navbar"> <!--<img src="images/back_icon.png" alt="" class="cf-back-button" onclick="history.back()">--> <img src="images/starbook_row_large_icon.png" alt="StarBook Logo"></div>
+  <div class="wrap">
+    <div class="card" >
+      <h1 id="formTitle">Celebrity Booking Form</h1>
+      <header class="form-head">
+        <img class="brand" id="celebImage" src="" alt="">
+        <div>
+          <h1 id="celeb" style="color: gray;"></h1>
+          <p class="lead">Request a meet-and-greet, appearance or campaign booking. Fill in details below.</p>
+        </div>
+      </header>
+
+
+
+      <form id="bookingForm" novalidate>
+
+        <!-- Basic Info -->
+        <div class="full2">
+          <label for="name">Full Name</label>
+          <input id="name" name="name" type="text" required placeholder="Firstname Lastname (Example)" />
+        </div>
+
+        <div>
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required placeholder="you@example.com" />
+        </div>
+
+        <div>
+          <label for="phone">Phone</label>
+          <input id="phone" name="phone" type="tel" required placeholder="+1 555 555 5555" />
+        </div>
+
+        <div>
+          <label for="country">Country</label>
+          <select id="country" name="country" required>
+            <option value="">Choose country…</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="state">State / Province</label>
+          <select id="state" name="state" required>
+            <option value="">Select state / province…</option>
+          </select>
+        </div>
+
+        <!-- New Fields -->
+        <div>
+          <label for="celebName">Celebrity Booked</label>
+          <!-- changed to readonly (so value is submitted) instead of disabled -->
+          <input id="celebName" name="celebName" type="text" placeholder="Enter celebrity name" readonly required/>
+        </div>
+
+        <div>
+          <label for="gender">Gender</label>
+          <select id="gender" name="gender" required>
+            <option value="">Select gender…</option>
+            <option>Male</option>
+            <option>Female</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="scheduledDate">Scheduled Date</label>
+          <input id="scheduledDate" name="scheduledDate" type="date" required />
+        </div>
+
+        <div>
+          <label for="eventType">Event Type</label>
+          <select id="eventType" name="eventType" required>
+            <option value="">Select type</option>
+            <option>Meet & Greet</option>
+            <option>Campaign</option>
+            <option>Event</option>
+            <option>Appearance</option>
+            <option>Concert</option>
+          </select>
+          <div id="priceDisplay" class="price-display"></div>
+        </div>
+
+        <div>
+          <label for="eventClass">Event Class</label>
+          <select id="eventClass" name="eventClass" required>
+            <option value="">Select class</option>
+            <option value="Low">Low Class</option>
+            <option value="Mid">Mid Class</option>
+            <option value="High">High Class</option>
+            <option value="Grand">Grand Class</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="eventVenue">Event Venue</label>
+          <!-- keep this one disabled for UX, but mirror value into hidden input for submission -->
+          <input id="eventVenue" name="eventVenue_display" type="text" placeholder="Available for High & Grand Class only" disabled />
+          <div class="help">Venue is visible but disabled for Low/Mid class. It becomes editable for High & Grand.</div>
+        </div>
+
+        <!-- Hidden input that actually gets submitted with the form -->
+        <input type="hidden" id="eventVenue_hidden" name="eventVenue" value="">
+
+        <div class="full1">
+          <label for="message">Details / Message</label>
+          <textarea id="message" name="message" placeholder="Any additional details (audience size, special request from celeb, reason for inviting the celeb)" ></textarea>
+        </div>
+
+        <div class="actions">
+          <button id="submitBtn" class="primary" type="submit">Submit Booking</button>
+          <div id="serverStatus" aria-live="assertive"></div>
+        </div>
+
+        <div class="full2 small">
+          
+        </div>
+      </form>
+      </br>
+      <div id="notice"  aria-live="polite"></div>
+      <p>By submitting you agree to our <a href="#" style="color:var(--accent);text-decoration:none">terms</a>.</p>
+    </div>
+  </div>
+
+<!-- Success Modal -->
+<div id="successModal" class="modal hidden">
+  <div class="modal-content">
+    <h2>Booking Successful</h2>
+    <p id="modalMsg"></p>
+    <p id="modalMsg2"></p><br>
+    <button id="closeModal">Continue</button>
+  </div>
+</div>
+
+<script src="scripts/data.js"></script>
+
+<script>
+  // --- Simulate getting selected celeb ID from URL ---
+  const urlParams = new URLSearchParams(window.location.search);
+  const celebId = parseInt(urlParams.get('id')) || 1; // fallback
+  //--------------------------------------------------------
+
+ // --- Load data (assuming data.js defines FALLBACK_CELEBS) ---
+ const celeb = FALLBACK_CELEBS.find(c => c.id === celebId) || FALLBACK_CELEBS[0];
+ if (celeb) {
+   document.getElementById('celeb').textContent = celeb.name;
+   // celebName is readonly now, so its value will be submitted
+   document.getElementById('celebName').value = celeb.name;
+   // set both display and hidden venue initial values
+   document.getElementById('eventVenue').value = celeb.primary_residential_region || "";
+   document.getElementById('eventVenue_hidden').value = celeb.primary_residential_region || "";
+   document.getElementById('celebImage').src = celeb.image || "";
+ }
+ //---------------------------------------------------------
+
+ //Modal
+ const successModal = document.getElementById("successModal");
+const modalMsg = document.getElementById("modalMsg");
+const modalMsg2 = document.getElementById("modalMsg2");
+const closeModal = document.getElementById("closeModal");
+
+let generatedRef = "";
+
+
+closeModal.addEventListener("click", () => {
+  successModal.classList.add("hidden");
+  if (generatedRef) {
+    window.location.href = `continuebooking.html?id=${generatedRef}`;
+  }
+});
+
+//--------------------------------------------------------
+
+
+
+
+/* ------------------ Config ------------------ */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw_PIwFbnWRghBd9mh--m7P2-LEYi24j5R_KfiS87ZT89U0W6k3SjOHSrC3Sny9O79m/exec";
+                    
+/* ------------------ Helpers ------------------ */
+const $ = (id) => document.getElementById(id);
+const showNotice = (msg, type="success") => {
+  const n = $("notice");
+  if(!msg){ n.innerHTML = ""; n.className = ""; return; }
+  n.innerHTML = `<div class="status ${type === "error" ? "error" : "success"}">${msg}</div>`;
+};
+
+
+const countryEl = $("country"), stateEl = $("state");
+Object.keys(countriesData).forEach(c => {
+  const opt = document.createElement("option");
+  opt.value = c; opt.textContent = c;
+  countryEl.appendChild(opt);
+});
+
+countryEl.addEventListener("change", () => {
+  stateEl.innerHTML = '<option value="">Select state / province…</option>';
+  const list = countriesData[countryEl.value] || [];
+  list.forEach(s => {
+    const o = document.createElement("option");
+    o.value = s; o.textContent = s;
+    stateEl.appendChild(o);
+  });
+});
+
+/* ------------------ Disable Past Dates ------------------ */
+const scheduledDate = $("scheduledDate");
+const today = new Date().toISOString().split("T")[0];
+scheduledDate.setAttribute("min", today);
+
+/* ------------------ Event Class: venue enable ------------------ */
+const eventClassEl = $("eventClass");
+const venueDisplayEl = $("eventVenue");         // visible (maybe disabled) field
+const venueHiddenEl = $("eventVenue_hidden");   // hidden field that will be submitted
+
+eventClassEl.addEventListener("change", () => {
+  const v = eventClassEl.value;
+  if (v === "high" || v === "grand") {
+    venueDisplayEl.disabled = false;
+    // clear display so user can type a venue; hidden will be updated on input
+    venueDisplayEl.value = "";
+    venueDisplayEl.focus();
+    venueHiddenEl.value = ""; // reset hidden
+  } else {
+    venueDisplayEl.disabled = true;
+    // revert display & hidden to celeb's default region
+    venueDisplayEl.value = celeb.primary_residential_region || "";
+    venueHiddenEl.value = celeb.primary_residential_region || "";
+  }
+});
+
+/* Keep hidden venue in sync when user types (only possible when enabled) */
+venueDisplayEl.addEventListener("input", () => {
+  venueHiddenEl.value = venueDisplayEl.value;
+});
+
+/* ------------------ Event Type Prices ------------------ */
+const MeetAndGreetPrice = celeb.meet_and_greet_price || 0;
+const CommercialsPrice  = celeb.commercials_price || 0;
+const AppearancePrice   = celeb.appearance_price || 0;
+const CampaignPrice     = celeb.campaign_price || 0;
+const EventPrice        = celeb.event_price || 0;
+
+let basePrice = 0;
+let BookingPrice = 0;
+
+const formEl = $("bookingForm");
+const hiddenPriceInput = document.createElement("input");
+hiddenPriceInput.type = "hidden";
+hiddenPriceInput.name = "bookingPrice";
+hiddenPriceInput.id = "bookingPrice";
+formEl.appendChild(hiddenPriceInput);
+
+const eventTypeEl = $("eventType");
+const priceDisplay = $("priceDisplay");
+
+function updateBookingPrice() {
+  switch (eventTypeEl.value) {
+    case "Meet & Greet": basePrice = MeetAndGreetPrice; break;
+    case "Campaign":     basePrice = CampaignPrice; break;
+    case "Event":        basePrice = EventPrice; break;
+    case "Appearance":   basePrice = AppearancePrice; break;
+    case "Concert":      basePrice = CommercialsPrice; break;
+    default:             basePrice = 0;
+  }
+
+  const cls = eventClassEl.value;
+  let multiplier = 1;
+  if (cls === "mid") multiplier = 1.5;
+  else if (cls === "high") multiplier = 2;
+  else if (cls === "grand") multiplier = 2.5;
+
+  BookingPrice = basePrice * multiplier;
+  hiddenPriceInput.value = BookingPrice > 0 ? BookingPrice : "";
+
+  if (BookingPrice > 0) {
+    priceDisplay.textContent = `Estimated Cost: $${BookingPrice.toLocaleString()}`;
+  } else {
+    priceDisplay.textContent = "";
+  }
+
+  console.log("BookingPrice set to:", BookingPrice);
+}
+
+eventTypeEl.addEventListener("change", updateBookingPrice);
+eventClassEl.addEventListener("change", updateBookingPrice);
+
+/* ------------------ Ensure hidden venue + celeb name are set before submit ------------------ */
+formEl.addEventListener("submit", () => {
+  // ensure hidden venue contains current display value (or fallback)
+  if (!venueHiddenEl.value) venueHiddenEl.value = venueDisplayEl.value || (celeb.primary_residential_region || "");
+  // ensure celebName (readonly) has value (it should already)
+  // ensure price hidden input is up-to-date
+  hiddenPriceInput.value = BookingPrice > 0 ? BookingPrice : "";
+});
+
+/* ------------------ Form Submit (network) ------------------ */
+const form = $("bookingForm");
+const submitBtn = $("submitBtn");
+const serverStatus = $("serverStatus");
+
+form.addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  showNotice(""); serverStatus.textContent = "";
+
+  if (!form.reportValidity()) {
+    showNotice("Please complete required fields.", "error");
+    return;
+  }
+
+  // make sure hidden fields are synced just before building FormData
+  if (!venueHiddenEl.value) venueHiddenEl.value = venueDisplayEl.value || (celeb.primary_residential_region || "");
+  hiddenPriceInput.value = BookingPrice > 0 ? BookingPrice : "";
+
+  const fd = new FormData(form);
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Submitting…";
+
+  try {
+    const res = await fetch(SCRIPT_URL, { method: "POST", body: fd });
+    const text = await res.text();
+
+    if (!res.ok) {
+      showNotice(text || "Server rejected the request.", "error");
+      serverStatus.textContent = "Submission failed.";
+    } 
+    else {
+       // ----------------------
+  // STEP (C) GOES HERE
+  // ----------------------
+  generatedRef = text.trim();  
+
+  modalMsg.textContent = "Your booking slip has been delivered to your email. You may proceed now using the Continue button, or return later through your email.";
+  modalMsg2.textContent = "Bookings not completed at least 2 days prior to your event date will be cancelled automatically.";
+
+  successModal.classList.remove("hidden");
+
+  // ----------------------
+  // KEEP ALL RESET LOGIC
+  // ----------------------
+  form.reset();
+  venueDisplayEl.disabled = true;
+  venueHiddenEl.value = "";
+  hiddenPriceInput.value = "";
+  BookingPrice = 0;
+  basePrice = 0;
+  priceDisplay.textContent = "";
+  document.getElementById('celebName').value = celeb.name;
+  document.getElementById('eventVenue').value = celeb.primary_residential_region || "";
+  document.getElementById('eventVenue_hidden').value = celeb.primary_residential_region || "";
+
+    }
+    } 
+  
+    catch (err) {
+    showNotice("Submission failed — network or permission issue.", "error");
+    serverStatus.textContent = err.message || "Network error";
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Submit Booking";
+  }
+});
+</script>
+
+
+<!--
+<script>
+  // Updated JavaScript with modal dialog + redirect after successful booking
+
+// --- Simulate getting selected celeb ID from URL ---
+const urlParams = new URLSearchParams(window.location.search);
+const celebId = parseInt(urlParams.get('id')) || 1;
+//--------------------------------------------------------
+
+// --- Load data (assuming data.js defines FALLBACK_CELEBS) ---
+const celeb = FALLBACK_CELEBS.find(c => c.id === celebId) || FALLBACK_CELEBS[0];
+if (celeb) {
+  document.getElementById('celeb').textContent = celeb.name;
+  document.getElementById('celebName').value = celeb.name;
+  document.getElementById('eventVenue').value = celeb.primary_residential_region || "";
+  document.getElementById('eventVenue_hidden').value = celeb.primary_residential_region || "";
+  document.getElementById('celebImage').src = celeb.image || "";
+}
+//---------------------------------------------------------
+
+/* ------------------ Config ------------------ */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw_PIwFbnWRghBd9mh--m7P2-LEYi24j5R_KfiS87ZT89U0W6k3SjOHSrC3Sny9O79m/exec";
+
+/* ------------------ Helpers ------------------ */
+const $ = (id) => document.getElementById(id);
+
+const countryEl = $("country"), stateEl = $("state");
+Object.keys(countriesData).forEach(c => {
+  const opt = document.createElement("option");
+  opt.value = c; opt.textContent = c;
+  countryEl.appendChild(opt);
+});
+
+countryEl.addEventListener("change", () => {
+  stateEl.innerHTML = '<option value="">Select state / province…</option>';
+  const list = countriesData[countryEl.value] || [];
+  list.forEach(s => {
+    const o = document.createElement("option");
+    o.value = s; o.textContent = s;
+    stateEl.appendChild(o);
+  });
+});
+
+/* ------------------ Disable Past Dates ------------------ */
+const scheduledDate = $("scheduledDate");
+const today = new Date().toISOString().split("T")[0];
+scheduledDate.setAttribute("min", today);
+
+/* ------------------ Event Class: venue enable ------------------ */
+const eventClassEl = $("eventClass");
+const venueDisplayEl = $("eventVenue");
+const venueHiddenEl = $("eventVenue_hidden");
+
+eventClassEl.addEventListener("change", () => {
+  const v = eventClassEl.value;
+  if (v === "high" || v === "grand") {
+    venueDisplayEl.disabled = false;
+    venueDisplayEl.value = "";
+    venueDisplayEl.focus();
+    venueHiddenEl.value = "";
+  } else {
+    venueDisplayEl.disabled = true;
+    venueDisplayEl.value = celeb.primary_residential_region || "";
+    venueHiddenEl.value = celeb.primary_residential_region || "";
+  }
+});
+
+venueDisplayEl.addEventListener("input", () => {
+  venueHiddenEl.value = venueDisplayEl.value;
+});
+
+/* ------------------ Event Type Prices ------------------ */
+const MeetAndGreetPrice = celeb.meet_and_greet_price || 0;
+const CommercialsPrice  = celeb.commercials_price || 0;
+const AppearancePrice   = celeb.appearance_price || 0;
+const CampaignPrice     = celeb.campaign_price || 0;
+const EventPrice        = celeb.event_price || 0;
+
+let basePrice = 0;
+let BookingPrice = 0;
+
+const formEl = $("bookingForm");
+const hiddenPriceInput = document.createElement("input");
+hiddenPriceInput.type = "hidden";
+hiddenPriceInput.name = "bookingPrice";
+hiddenPriceInput.id = "bookingPrice";
+formEl.appendChild(hiddenPriceInput);
+
+const eventTypeEl = $("eventType");
+const priceDisplay = $("priceDisplay");
+
+function updateBookingPrice() {
+  switch (eventTypeEl.value) {
+    case "Meet & Greet": basePrice = MeetAndGreetPrice; break;
+    case "Campaign":     basePrice = CampaignPrice; break;
+    case "Event":        basePrice = EventPrice; break;
+    case "Appearance":   basePrice = AppearancePrice; break;
+    case "Concert":      basePrice = CommercialsPrice; break;
+    default: basePrice = 0;
+  }
+
+  const cls = eventClassEl.value;
+  let multiplier = 1;
+  if (cls === "mid") multiplier = 1.5;
+  else if (cls === "high") multiplier = 2;
+  else if (cls === "grand") multiplier = 2.5;
+
+  BookingPrice = basePrice * multiplier;
+  hiddenPriceInput.value = BookingPrice > 0 ? BookingPrice : "";
+
+  if (BookingPrice > 0) {
+    priceDisplay.textContent = `Estimated Cost: $${BookingPrice.toLocaleString()}`;
+  } else {
+    priceDisplay.textContent = "";
+  }
+}
+
+eventTypeEl.addEventListener("change", updateBookingPrice);
+eventClassEl.addEventListener("change", updateBookingPrice);
+
+/* ------------------ Ensure hidden venue before submit ------------------ */
+formEl.addEventListener("submit", () => {
+  if (!venueHiddenEl.value) venueHiddenEl.value = venueDisplayEl.value || (celeb.primary_residential_region || "");
+  hiddenPriceInput.value = BookingPrice > 0 ? BookingPrice : "";
+});
+
+/* ------------------ Modal Popup ------------------ */
+// HTML required somewhere on page:
+// <div id="successModal" class="modal hidden">
+//   <div class="modal-content">
+//     <h2>Booking Successful</h2>
+//     <p id="modalMsg"></p>
+//     <button id="closeModal">Continue</button>
+//   </div>
+// </div>
+
+const successModal = $("successModal");
+const modalMsg = $("modalMsg");
+const closeModal = $("closeModal");
+let generatedRef = "";
+
+closeModal.addEventListener("click", () => {
+  successModal.classList.add("hidden");
+  if (generatedRef) window.location.href = `continuebooking?id=${generatedRef}`;
+});
+
+/* ------------------ Form Submit (network) ------------------ */
+const form = $("bookingForm");
+const submitBtn = $("submitBtn");
+const serverStatus = $("serverStatus");
+
+form.addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  serverStatus.textContent = "";
+
+  if (!form.reportValidity()) return;
+
+  if (!venueHiddenEl.value) venueHiddenEl.value = venueDisplayEl.value || (celeb.primary_residential_region || "");
+  hiddenPriceInput.value = BookingPrice > 0 ? BookingPrice : "";
+
+  const fd = new FormData(form);
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Submitting…";
+
+  try {
+    const res = await fetch(SCRIPT_URL, { method: "POST", body: fd });
+    const text = await res.text();
+
+    if (!res.ok) {
+      serverStatus.textContent = "Submission failed.";
+    } else {
+      // Assume response contains booking reference like: "REF: 123456"
+      generatedRef = text.trim();
+
+      modalMsg.textContent = "Your booking slip has been sent to your email. Open your inbox to continue and complete your booking.";
+      successModal.classList.remove("hidden");
+
+      form.reset();
+      venueDisplayEl.disabled = true;
+      venueHiddenEl.value = "";
+      hiddenPriceInput.value = "";
+      BookingPrice = 0;
+      basePrice = 0;
+      priceDisplay.textContent = "";
+      document.getElementById('celebName').value = celeb.name;
+      document.getElementById('eventVenue').value = celeb.primary_residential_region || "";
+      document.getElementById('eventVenue_hidden').value = celeb.primary_residential_region || "";
+    }
+  } catch (err) {
+    serverStatus.textContent = err.message || "Network error";
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Submit Booking";
+  }
+});
+
+</script>
+-->
+</body>
+</html>
