@@ -16,8 +16,8 @@
   .page-header h2{color:black;font-size:22px;margin-bottom:8px}
   .page-header p{color:#555;font-size:14px}
 
-  .main{width:100%;max-width:1200px;margin:18px auto;padding:0 20px;display:grid;grid-template-columns:1fr 1.5fr;gap:20px;align-items:flex-start}
-  @media(max-width:900px){.main{grid-template-columns:1fr}}
+  .main{width:100%;max-width:1200px;margin:18px auto;padding:0 20px;display:grid;grid-template-columns:  2.5fr 1fr;gap:20px;align-items:flex-start}
+
 
   .left-col{background:#fff;border-radius:12px;padding:22px;box-shadow:0 6px 22px rgba(0,0,0,0.06)}
   .section-title{color:#303030;font-size:18px;margin-bottom:14px}
@@ -35,7 +35,7 @@
   .step .circle{width:34px;height:34px;border-radius:50%;border:2px solid #111;background:#fff;display:flex;align-items:center;justify-content:center;font-weight:700}
   .step .label{flex:1}
 
-  .methods{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+  .methods{display:grid;gap:10px;margin-top:6px; grid-template-columns: 1fr 1fr 1fr 1fr;}
   .method-btn{padding:10px 14px;border-radius:10px;border:1px solid #ddd;background:#fff;cursor:pointer;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:12px;position:relative;opacity:0.5;animation:blink 1.6s infinite alternate}
   .method-btn .name{flex:1;text-align:left}
   .method-btn .selected-indicator{width:28px;height:28px;border-radius:50%;background:#fff;border:2px solid #000;display:flex;align-items:center;justify-content:center;font-weight:700;visibility:hidden}
@@ -45,8 +45,8 @@
 
   @keyframes blink { 0% {opacity:0.5} 100% {opacity:1} }
 
-  .instructions{margin-top:14px;padding:12px;border-radius:8px;border:1px dashed #e6e6e6;background:#faf9ff;min-height:64px;opacity:0.5;animation:shine 1.6s infinite alternate}
-  @keyframes shine { 0% {opacity:0.5} 100% {opacity:1} }
+  .instructions{margin-top:14px;padding:12px;border-radius:8px;border:1px dashed #e6e6e6;background:#faf9ff;min-height:64px;opacity:1;animation:shine 1.6s infinite alternate}
+
 
   .copy-btn{background:#111;color:#fff;border:none;padding:10px 12px;border-radius:8px;cursor:pointer;opacity:0.8}
   .copy-btn:disabled{opacity:0.5;cursor:not-allowed}
@@ -91,6 +91,9 @@
   }
   .upload-status.success{background:#d1ffe862;color:#02ad57;border:1px solid #18e780;}
   .upload-status.error{background:#fdecea;color:#b22222;border:1px solid #b22222;}
+    @media(max-width:900px){.main{grid-template-columns:1fr}
+     .methods{grid-template-columns: 1fr 1fr; }}
+    @media(max-width:400px){.methods{max-width:100px;} .method-btn{gap: 8px; padding: 10px 8px}}
 </style>
 </head>
 <body>
@@ -102,8 +105,8 @@
 </div>
 
 <div class="main">
- 
-  <div class="left-col">
+
+    <div class="right-col">
     <div class="floating-card">
       <h3>Payment Steps</h3>
       <div class="steps">
@@ -123,6 +126,7 @@
         </div>
 
         <hr style="color: #555; margin: 20px 30px;">
+
 
         <div class="step" id="step2">
           <div class="circle">2</div>
@@ -155,11 +159,12 @@
       </div>
     </div>
   </div>
-  <div class="right-col">
-    <div class="section-title">Booking Details</div>
+
+  <div class="left-col">
+    <div class="section-title"><b>Booking Details</b></div>
     <div id="bookingDetails" class="details-list">Fetching booking...</div>
   </div>
- 
+
 </div>
 
 <script>
@@ -167,8 +172,8 @@ const BOOKING_API = "https://script.google.com/macros/s/AKfycbw_PIwFbnWRghBd9mh-
 const PAYMENT_API = "https://script.google.com/macros/s/AKfycbzROS6vsRs3Sh9O0-DE-bav4gWYY6ZIADJVGe1YlNgg2J2X8i1PFspp0-Uyt7J_bbyK/exec";
 const UPLOAD_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwhSXlfDynhJqbGB389-0CFQjJQ0JWN_Zl2Zj36V6MRF7sD0taB1T75AFHV6-Sdh0pt/exec';
 
-const IMAGE_ICON = "images/image_icon.png"; // replace with your URL
-const PDF_ICON = "images/pdf_icon.png"; // replace with your URL
+const IMAGE_ICON = "images/image_icon.png";
+const PDF_ICON = "images/pdf_icon.png";
 const DEFAULT_ICON = "images/upload_icon.png";
 
 let bookingData = null;
@@ -200,17 +205,30 @@ function renderBookingDetails(data) {
 // Payment method selection
 const methodButtons = Array.from(document.querySelectorAll('.method-btn'));
 const methodsOrder = ['PayPal','Bank Transfer','USDT/crypto','Gift Card'];
+
 function setActiveMethod(btn) {
   methodButtons.forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
+
   const method = btn.dataset.method;
   const info = document.getElementById('methodInstructions');
   const details = methodInstructions[method];
-  info.innerHTML = details ? `<div><strong>${method} Instructions</strong><div style='margin-top:8px;white-space:pre-wrap'>${details}</div></div>` : `<div style='color:#b22222'>${method} instructions unavailable.</div>`;
+
+  const amountText = bookingData
+    ? `$${Number(bookingData.bookingPrice).toLocaleString()}`
+    : '';
+
+  info.innerHTML = details
+    ? `<div>
+         <strong>${method} (Pay - ${amountText})</strong>
+         <div style='margin-top:8px;white-space:pre-wrap'>${details}</div>
+       </div>`
+    : `<div style='color:#b22222'>${method} instructions unavailable.</div>`;
 }
+
 methodButtons.forEach(b => b.addEventListener('click', () => setActiveMethod(b)));
 
-// File selection handling
+// File handling
 const fileInput = document.getElementById('fileInput');
 const fileIcon = document.getElementById('fileIcon');
 const fileName = document.getElementById('fileName');
@@ -241,16 +259,13 @@ fileInput.addEventListener('change', () => {
   uploadBtn.disabled = false;
 });
 
-// --- Helper to read bookingData fields safely ---
 function safe(obj, ...keys) {
   for (const k of keys) {
-    if (!obj) continue;
-    if (obj[k] !== undefined && obj[k] !== null && String(obj[k]).trim() !== '') return String(obj[k]);
+    if (obj && obj[k]) return String(obj[k]);
   }
   return null;
 }
 
-// Upload function (modified to include visitor/booking fields)
 async function uploadSelectedFile() {
   const file = fileInput.files[0];
   if(!file) return;
@@ -259,52 +274,31 @@ async function uploadSelectedFile() {
   reader.onload = async () => {
     const b64 = reader.result.split(',')[1];
 
-    // gather visitor/booking fields (best-effort)
-    const visitorName = bookingData ? safe(bookingData, 'name', 'fullName', 'visitorName') : null;
-    const visitorEmail = bookingData ? safe(bookingData, 'email', 'contactEmail', 'emailAddress') : (document.getElementById('visitorEmail') ? document.getElementById('visitorEmail').value : null);
-    const bookingId = bookingData ? safe(bookingData, 'ref', 'bookingRef', 'bookingId') : null;
-    const amount = bookingData ? safe(bookingData, 'bookingPrice', 'price', 'amount') : null;
-    // optional message/note element (if present on your page)
-    const messageEl = document.getElementById('receiptNote');
-    const message = messageEl ? messageEl.value : null;
-
     const payload = {
       filename: file.name,
       mime: file.type || 'application/octet-stream',
       b64: b64,
       adminEmail: adminEmail,
-      // the fields your Apps Script uses:
-      visitorName: visitorName,
-      visitorEmail: visitorEmail,
-      bookingId: bookingId,
-      amount: amount,
-      message: message
+      visitorName: safe(bookingData,'name'),
+      visitorEmail: safe(bookingData,'email'),
+      bookingId: safe(bookingData,'ref'),
+      amount: safe(bookingData,'bookingPrice')
     };
 
-    // Remove null entries to keep payload tidy
-    Object.keys(payload).forEach(k => { if (payload[k] === null || payload[k] === undefined) delete payload[k]; });
-
-    uploadStatus.className = 'upload-status';
     uploadStatus.textContent = 'Uploading...';
 
     try{
-      const resp = await fetch(UPLOAD_SCRIPT_URL, { method:'POST', body:JSON.stringify(payload) });
-      const text = await resp.text();
-      // Optionally you can parse JSON if your Apps Script returns JSON
-      let ok = true;
-      try { const j = JSON.parse(text); if (j && j.ok === false) ok = false; } catch(e) {/* not JSON, ignore */}
-      if (ok) {
-        uploadStatus.className = 'upload-status success';
-        uploadStatus.textContent = 'Your receipt has successfully been uploaded for verification. On confirmation an email will be sent to you containing your booking receipt which you will use to gain access to the event venue on the scheduled date of the event';
-      } else {
-        uploadStatus.className = 'upload-status error';
-        uploadStatus.textContent = 'Upload returned an error: ' + text;
-        console.error('Upload error', text);
-      }
-    }catch(err){
+      const resp = await fetch(UPLOAD_SCRIPT_URL, {
+        method:'POST',
+        body:JSON.stringify(payload)
+      });
+
+      uploadStatus.className = 'upload-status success';
+      uploadStatus.textContent =
+        'Your receipt has successfully been uploaded for verification. Confirmation will be sent via email.';
+    } catch(err){
       uploadStatus.className = 'upload-status error';
-      uploadStatus.textContent = 'Upload failed: ' + err;
-      console.error(err);
+      uploadStatus.textContent = 'Upload failed.';
     }
   };
   reader.readAsDataURL(file);
@@ -314,26 +308,51 @@ uploadBtn.addEventListener('click', uploadSelectedFile);
 
 // Fetch booking + preload instructions
 const ref = new URLSearchParams(window.location.search).get('id');
+
 function preloadInstructions() {
-  const promises = methodsOrder.map(method => fetch(`${PAYMENT_API}?action=getPaymentDetails&method=${encodeURIComponent(method)}`)
-    .then(r=>r.json())
-    .then(d=>{methodInstructions[method]=(d && d.success && d.details)?d.details:`${method} payment method unavailable.`;})
-    .catch(()=>{methodInstructions[method]=`${method} payment method unavailable.`;}));
-  return Promise.all(promises);
-}
-function fetchBooking() {
-  if(!ref){ document.getElementById('bookingDetails').innerHTML="<div style='color:red;padding:12px;border-radius:8px;background:#fff4f4;border:1px solid #f2cece'>No booking reference found.</div>"; return Promise.resolve(); }
-  return fetch(`${BOOKING_API}?id=${encodeURIComponent(ref)}`).then(r=>r.json()).then(d=>{if(!d||!d.success)throw new Error('No booking'); bookingData=d.booking; renderBookingDetails(bookingData);}).catch(()=>{document.getElementById('bookingDetails').innerHTML="<div style='color:red;padding:12px;border-radius:8px;background:#fff4f4;border:1px solid #f2cece'>Error loading booking details.</div>";});
+  return Promise.all(
+    methodsOrder.map(method => {
+
+      // 🔧 FIX: match Google Sheet exactly
+      let backendMethod = method;
+      if (method === 'USDT/crypto') backendMethod = 'USDT/Crypto';
+
+      return fetch(`${PAYMENT_API}?action=getPaymentDetails&method=${encodeURIComponent(backendMethod)}`)
+        .then(r => r.json())
+        .then(d => {
+          methodInstructions[method] =
+  d && d.success && d.details
+    ? d.details
+        .replace(/\r?\n+/g, ' ')   // remove line breaks
+        .replace(/\s{2,}/g, ' ')   // collapse extra spaces
+        .trim()
+    : `${method} payment method unavailable.`;
+
+        })
+        .catch(() => {
+          methodInstructions[method] = `${method} payment method unavailable.`;
+        });
+    })
+  );
 }
 
-Promise.all([fetchBooking(),preloadInstructions()]).then(()=>{
-  const defaultBtn = methodButtons.find(b=>b.dataset.method.toLowerCase()==='paypal');
-  if(defaultBtn) setActiveMethod(defaultBtn);
-  document.querySelectorAll('.method-btn,.instructions').forEach(el=>{el.style.animation='none';el.style.opacity='1'});
+function fetchBooking() {
+  if(!ref) return;
+
+  return fetch(`${BOOKING_API}?id=${encodeURIComponent(ref)}`)
+    .then(r=>r.json())
+    .then(d=>{
+      bookingData = d.booking;
+      renderBookingDetails(bookingData);
+    });
+}
+
+Promise.all([fetchBooking(), preloadInstructions()]).then(() => {
+  const defaultBtn = methodButtons.find(b => b.dataset.method === 'PayPal');
+  if (defaultBtn) setActiveMethod(defaultBtn);
 });
 </script>
 
+
 </body>
 </html>
-
-
